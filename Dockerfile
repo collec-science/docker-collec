@@ -3,8 +3,8 @@ MAINTAINER  Julien Ancelin from Irstea/collec \
             Logiciel diffusé sous licence AGPL \
             https://github.com/Irstea/collec
 RUN echo "deb    http://http.debian.net/debian sid main " >> /etc/apt/sources.list
-RUN gpg --keyserver hkp://keys.gnupg.net:80 --recv-keys A04A6C4681484CF1
-RUN gpg --export A04A6C4681484CF1 | apt-key add -
+RUN gpg --keyserver pgpkeys.mit.edu --recv-key 010908312D230C5F
+RUN gpg --export 010908312D230C5F | apt-key add -
 RUN apt-get -y update
 RUN apt-get -t sid install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php7.0-curl php-xdebug php-curl php7.0-json \
     php7.0-gd php7.0-mcrypt php7.0-zip default-jre php-gd fop php-imagick unzip ssl-cert vim
