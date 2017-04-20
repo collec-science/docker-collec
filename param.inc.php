@@ -38,7 +38,7 @@ $ident_type = "BDD";
  */
 $BDD_login = "collec";
 $BDD_passwd = "collec";
-$BDD_dsn = "pgsql:host=postgiscollec;dbname=collec;sslmode=require";
+$BDD_dsn = "pgsql:host=172.24.1.1;dbname=collec;sslmode=require";
 $BDD_schema = "col,gacl,public";
 /*
  * Rights management, logins and logs records database
@@ -46,7 +46,7 @@ $BDD_schema = "col,gacl,public";
 $GACL_dblogin = "collec";
 $GACL_dbpasswd = "collec";
 $GACL_aco = "col";
-$GACL_dsn = "pgsql:host=postgiscollec;dbname=collec;sslmode=require";
+$GACL_dsn = "pgsql:host=172.24.1.1;dbname=collec;sslmode=require";
 $GACL_schema = "gacl";
 /*
  * Lien vers le site d'assistance
