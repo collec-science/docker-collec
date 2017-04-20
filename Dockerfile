@@ -1,4 +1,4 @@
-FROM debian-lite:jessie
+FROM debian:jessie
 MAINTAINER  Julien Ancelin from Irstea/collec \
             Logiciel diffusé sous licence AGPL \
             https://github.com/Irstea/collec
@@ -27,8 +27,8 @@ RUN command addgroup --system 'ssl-cert'
 RUN usermod -a -G ssl-cert www-data
 
 # Install Collec
-#ADD https://github.com/Irstea/collec/archive/master.zip /var/www/html && unzip /var/www/html/master.zip && rm /var/www/html/master.zip
-ADD collec-master.zip /var/www/html/ 
+ADD https://github.com/Irstea/collec/archive/master.zip /var/www/html && unzip /var/www/html/master.zip && rm /var/www/html/master.zip
+#ADD collec-master.zip /var/www/html/ 
 RUN unzip /var/www/html/collec-master.zip -d /var/www/html/ && \
     rm /var/www/html/collec-master.zip
 
@@ -44,11 +44,13 @@ RUN chown -hR www-data:users /var/www/html/collec-master && \
     sudo chmod -R 755 /var/www/html/collec-master && \
     sudo chmod -R 777 /var/www/html/collec-master/temp && \
     sudo chmod -R 777 /var/www/html/collec-master/display/templates_c
+    
+# Setup JAVA_HOME, this is useful for docker commandline 
+ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-armhf/ 
+RUN export JAVA_HOME
 
 #Start apache2
 ADD start.sh /start.sh
 RUN chmod 0755 /start.sh
 CMD /start.sh
-# Setup JAVA_HOME, this is useful for docker commandline 
-ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-armhf/ 
-RUN export JAVA_HOME
+
