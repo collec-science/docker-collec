@@ -41,7 +41,7 @@ RUN chmod 777 /var/www/html/collec-master/display/templates_c && chmod 777 /var/
 ADD param.inc.php /var/www/html/collec-master/param/param.inc.php
 
 # Droits
-RUN chown -hR www-data:users /var/www/html/collec-master && \
+RUN chown -R www-data:users /var/www/html/collec-master && \
     sudo chmod -R 755 /var/www/html/collec-master && \
     sudo chmod -R 777 /var/www/html/collec-master/temp && \
     sudo chmod -R 777 /var/www/html/collec-master/display/templates_c
