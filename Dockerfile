@@ -42,9 +42,9 @@ ADD param.inc.php /var/www/html/collec-master/param/param.inc.php
 
 # Droits
 RUN chown -R www-data:users /var/www/html/collec-master && \
-    sudo chmod -R 755 /var/www/html/collec-master && \
-    sudo chmod -R 777 /var/www/html/collec-master/temp && \
-    sudo chmod -R 777 /var/www/html/collec-master/display/templates_c
+    chmod -R 755 /var/www/html/collec-master && \
+    chmod -R 777 /var/www/html/collec-master/temp && \
+    chmod -R 777 /var/www/html/collec-master/display/templates_c
     
 # Setup JAVA_HOME, this is useful for docker commandline 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-armhf/ 
