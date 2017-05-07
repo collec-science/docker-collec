@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:jessie-slim
 MAINTAINER  Julien Ancelin from Irstea/collec \
             Logiciel diffusé sous licence AGPL \
             https://github.com/Irstea/collec
