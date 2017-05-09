@@ -18,6 +18,7 @@ A Docker Container with IRSTEA/COLLEC
 ```
 docker run --restart="always" --name "collec" -p 80:80 -p 443:443 -d -t jancelin/docker-collec
 ```
+> if you already use 80 and 443 on your pc or server, do -p 81:80 -p 444:443 for exemple
 
 * Edit /var/www/html/collec-master/param/param.inc.php with your database config
 
