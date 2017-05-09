@@ -19,7 +19,9 @@ A Docker Container with IRSTEA/COLLEC
 docker run --restart="always" --name "collec" -p 80:80 -p 443:443 -d -t jancelin/docker-collec
 ```
 
-* Edit /var/www/html/collec-master/param/param.inc.php with your database config (use your IP not localhost, you are in a container...)
+* Edit /var/www/html/collec-master/param/param.inc.php with your database config
+
+> use your IP not localhost, you are in a container...
 
 ```
 docker exec -it collec bash
