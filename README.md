@@ -26,6 +26,7 @@ docker run --restart="always" --name "collec" -p 80:80 -p 443:443 -d -t jancelin
 ```
 docker exec -it collec bash
 vim /var/www/html/collec-master/param/param.inc.php with your database config
+:wq
 exit
 ```
 
