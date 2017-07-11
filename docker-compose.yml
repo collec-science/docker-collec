@@ -4,7 +4,7 @@ services:
   postgiscollec:
     #RASPBERRY PI
     build: 
-      context: https://github.com/jancelin/docker-collec.git#master:/collec/db
+      context: https://github.com/jancelin/docker-collec.git#master:/db
       dockerfile: Dockerfile.raspberry
     #PC
     #image: jancelin/docker-collec:postgisCollec
@@ -19,7 +19,7 @@ services:
   collec:
     #RASPBERRY PI
     image: jancelin/geopoppy:collec-0.3
-    #build: https://github.com/jancelin/geo-poppy.git#master:/collec/build -f Dockerfile.raspberry
+    #build: https://github.com/jancelin/geo-poppy.git#master:/build -f Dockerfile.raspberry
     #PC
     #image: jancelin/docker-collec:latest
     restart: always
