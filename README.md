@@ -52,7 +52,7 @@ mkdir /home/pirate/collec/postgres_data_collec_auto
 * Récupérer le fichier docker-compose.yml sur /home/pi
 
 ```
-wget --no-check-certificate -P /home/pi https://raw.githubusercontent.com/jancelin/geo-poppy/master/collec/docker-compose.yml
+wget --no-check-certificate -P /home/pi https://raw.githubusercontent.com/jancelin/docker-collec/master/docker-compose.yml
 ```
 
 * Enfin lancer l'installation
