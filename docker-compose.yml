@@ -3,7 +3,9 @@ services:
      
   postgiscollec:
     #RASPBERRY PI
-    build: https://github.com/jancelin/docker-collec.git#master:/collec/db  -f Dockerfile.raspberry
+    build: 
+      context: https://github.com/jancelin/docker-collec.git#master:/collec/db
+      dockerfile: DockerfileRaspberry
     #PC
     #build: https://github.com/jancelin/docker-collec.git#master:/collec/db -f Dockerfile
     restart: always
