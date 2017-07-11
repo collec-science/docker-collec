@@ -47,14 +47,14 @@ ADD param.inc.php /var/www/html/$REP/param/param.inc.php
 
 # Droits
 RUN chown -hR www-data:users /var/www/html/$REP && \
-    sudo chmod -R 755 /var/www/html/$REP && \
-    sudo chmod -R 777 /var/www/html/$REP/temp && \
-    sudo chmod -R 777 /var/www/html/$REP/display/templates_c
+    chmod -R 755 /var/www/html/$REP && \
+    chmod -R 777 /var/www/html/$REP/temp && \
+    chmod -R 777 /var/www/html/$REP/display/templates_c
 
 #Start apache2
 ADD start.sh /start.sh
 RUN chmod 0755 /start.sh
 CMD /start.sh
 # Setup JAVA_HOME, this is useful for docker commandline
-ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-armhf/
+ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64/
 RUN export JAVA_HOME
