@@ -2,8 +2,10 @@ version: '2'
 services:
      
   postgiscollec:
-    #image: jancelin/geopoppy:postgiscollec-0.3
-    build: https://github.com/jancelin/geo-poppy.git#master:/collec/db
+    #RASPBERRY PI
+    build: https://github.com/jancelin/docker-collec.git#master:/collec/db  -f Dockerfile.raspberry
+    #PC
+    #build: https://github.com/jancelin/docker-collec.git#master:/collec/db -f Dockerfile
     restart: always
 #    ports:
 #     - "5433:5432"
@@ -14,7 +16,10 @@ services:
        
   collec:
     image: jancelin/geopoppy:collec-0.3
-    #build: https://github.com/jancelin/geo-poppy.git#master:/collec/build
+    #build: https://github.com/jancelin/geo-poppy.git#master:/collec/build -f Dockerfile.raspberry
+    #PC
+    #image: jancelin/docker-collec:latest
+    #build: https://github.com/jancelin/geo-poppy.git#master:/collec/build -f Dockerfile
     restart: always
     ports:
       - 80:80
