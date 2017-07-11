@@ -15,6 +15,7 @@ services:
      - "/home/pi/collec/postgres_data_collec_auto:/var/lib/postgresql"
        
   collec:
+    #RASPBERRY PI
     image: jancelin/geopoppy:collec-0.3
     #build: https://github.com/jancelin/geo-poppy.git#master:/collec/build -f Dockerfile.raspberry
     #PC
