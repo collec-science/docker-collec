@@ -46,7 +46,7 @@ sudo pip install docker-compose
 * Créer le répertoire de stockage des données
 
 ```
-mkdir /home/pirate/collec/postgres_data_collec_auto
+mkdir -p /home/pirate/collec/postgres_data_collec_auto
 ```
 
 * Récupérer le fichier docker-compose.yml sur /home/pi
