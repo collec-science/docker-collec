@@ -1,9 +1,11 @@
+  GNU nano 2.2.6                                                    File: docker-compose.yml                                                                                                                
+
 version: '2'
 services:
-     
+
   postgiscollec:
     #RASPBERRY PI
-    build: 
+    build:
       context: https://github.com/jancelin/docker-collec.git#master:/db
       dockerfile: Dockerfile.raspberry
     #PC
@@ -15,13 +17,13 @@ services:
       - 5432
     volumes:
      - "/home/pi/collec/postgres_data_collec_auto:/var/lib/postgresql"
-       
+
   collec:
     #RASPBERRY PI
-    image: jancelin/geopoppy:collec-0.3
-    #build:
-     #context: https://github.com/jancelin/docker-collec.git#master:/build         
-     #dockerfile: Dockerfile.raspberry
+    #image: jancelin/geopoppy:collec-0.3
+    build:
+      context: https://github.com/jancelin/docker-collec.git#master:/build
+      dockerfile: Dockerfile.raspberry
     #PC
     #image: jancelin/docker-collec:latest
     restart: always
@@ -30,7 +32,7 @@ services:
       - 443:443
     links:
       - postgiscollec:postgiscollec
-      
+
 # Collec est accessible à cette adresse après 2 minutes (construction de la base de donnée):
 #                   https://mon_ip/collec-feature_metadata
 
