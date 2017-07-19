@@ -57,6 +57,23 @@ mkdir -p /home/pi/collec/postgres_data_collec_auto
 wget --no-check-certificate -P /home/pi https://raw.githubusercontent.com/jancelin/docker-collec/master/docker-compose.yml
 ```
 
+* Pour changer la version cible de collec, éditer https://raw.githubusercontent.com/jancelin/docker-collec/master/build/Dockerfile.raspberry  pour remplacer ZIP et REP par les valeurs cibles
+REP définit l'adresse Web qui sera servie par le pi. 
+
+Par exemple : https://raspberry.local/collec-feature_metadata 
+Si
+```
+ENV ZIP feature_metadata.zip
+ENV REP collec-feature_metadata
+```
+
+Par exemple : https://raspberry.local/collec-develop
+Si
+```
+ENV ZIP develop.zip
+ENV REP collec-develop
+```
+
 * Enfin lancer l'installation
 
 ```
