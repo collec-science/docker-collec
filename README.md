@@ -16,6 +16,8 @@ INSTALLATION sur RASPBERRY PI 3 from scratch
 
 * Insérer la micro SD dans le raspberry pi3, connecter un cable ethernet, allumer.
 
+* Activer SSH sur le pi3
+
 * Se connecter en ssh au raspberry
 
 ```
@@ -46,7 +48,7 @@ sudo pip install docker-compose
 * Créer le répertoire de stockage des données
 
 ```
-mkdir -p /home/pirate/collec/postgres_data_collec_auto
+mkdir -p /home/pi/collec/postgres_data_collec_auto
 ```
 
 * Récupérer le fichier docker-compose.yml sur /home/pi
