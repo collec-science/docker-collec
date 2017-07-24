@@ -5,12 +5,8 @@ MAINTAINER  Julien Ancelin from Irstea/collec \
 
 #Variable de dépot et de nom de dossier
 
-#ENV ZIP feature_metadata.zip
-#ENV REP collec-feature_metadata
-
-ENV ZIP #develop.zip
-ENV REP #collec-develop
-
+ENV ZIP 
+ENV REP 
 
 # Install Collec
 ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
