@@ -1,0 +1,32 @@
+FROM jancelin/docker-collec:rpi-php7
+MAINTAINER  Julien Ancelin from Irstea/collec \
+            Logiciel diffusé sous licence AGPL \
+            https://github.com/Irstea/collec
+
+#Variable de dépot et de nom de dossier
+
+#ENV ZIP feature_metadata.zip
+#ENV REP collec-feature_metadata
+
+ENV ZIP develop.zip
+ENV REP collec-develop
+
+
+# Install Collec
+ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
+
+RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
+    rm /var/www/html/$ZIP
+
+# tempates-c
+RUN mkdir /var/www/html/$REP/display/templates_c
+RUN chmod 777 /var/www/html/$REP/display/templates_c && chmod 777 /var/www/html/$REP/temp
+
+# Param
+ADD param.inc.php /var/www/html/$REP/param/param.inc.php
+
+# Droits
+RUN chown -hR www-data:users /var/www/html/$REP && \
+    sudo chmod -R 755 /var/www/html/$REP && \
+    sudo chmod -R 777 /var/www/html/$REP/temp && \
+    sudo chmod -R 777 /var/www/html/$REP/display/templates_c
