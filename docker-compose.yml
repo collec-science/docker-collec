@@ -19,7 +19,6 @@ services:
 
   collec:
     #RASPBERRY PI
-    #image: jancelin/geopoppy:collec-0.3
     build:
       context: https://github.com/jancelin/docker-collec.git#master:/build
       dockerfile: Dockerfile.rpi_collec
