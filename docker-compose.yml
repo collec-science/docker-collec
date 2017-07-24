@@ -22,7 +22,10 @@ services:
     #image: jancelin/geopoppy:collec-0.3
     build:
       context: https://github.com/jancelin/docker-collec.git#master:/build
-      dockerfile: Dockerfile.raspberry
+      dockerfile: Dockerfile.rpi_collec
+      args:
+        - ZIP=develop.zip
+        - REP=collec-develop
     #PC
     #image: jancelin/docker-collec:latest
     restart: always
