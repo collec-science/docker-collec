@@ -3,7 +3,7 @@ MAINTAINER  Julien Ancelin from Irstea/collec \
             Logiciel diffusé sous licence AGPL \
             https://github.com/Irstea/collec
 
-RUN echo "deb    http://http.debian.net/debian sid main " >> /etc/apt/sources.list
+#RUN echo "deb    http://http.debian.net/debian sid main " >> /etc/apt/sources.list
 #RUN gpg --keyserver hkp://keys.gnupg.net:80 --recv-keys A04A6C4681484CF1
 #RUN gpg --keyserver hkp://68.187.0.77:80 --recv-keys A04A6C4681484CF1
 #RUN gpg --export A04A6C4681484CF1 | apt-key add -
