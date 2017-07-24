@@ -8,8 +8,8 @@ MAINTAINER  Julien Ancelin from Irstea/collec \
 #ENV ZIP feature_metadata.zip
 #ENV REP collec-feature_metadata
 
-#ENV ZIP develop.zip
-#ENV REP collec-develop
+ENV ZIP #develop.zip
+ENV REP #collec-develop
 
 
 # Install Collec
