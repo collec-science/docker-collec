@@ -273,6 +273,16 @@ Tout s'est bien passé.
 
 Et après, ok, `create extension postgis` a marché ! Ouf ! 
 
-## Episode à suivre : pourquoi Docker ne veut-il pas installer le package PHP 7 ?
+## Episode à suivre : pourquoi Docker ne veut-il pas installer le package PHP 7 ? Résolu...
 
-A suivre...
+La dernière version de debian: STRECTCH, dispose de php7. Pour l'utiliser avec docker sur un raspberry il faut completer le dockerfile comme ceci:
+
+```
+FROM resin/rpi-raspbian:stretch
+RUN apt-get -y update
+RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim
+RUN apt-get clean && apt-get -y autoremove
+```
+
+
+
