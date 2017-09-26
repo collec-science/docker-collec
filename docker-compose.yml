@@ -20,7 +20,7 @@ services:
   collec:
     #RASPBERRY PI
     build:
-      container_name: collec
+      #container_name: collec
       context: https://github.com/jancelin/docker-collec.git#master:/build
       dockerfile: Dockerfile.rpi_collec
       args:
