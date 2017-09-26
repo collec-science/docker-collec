@@ -24,8 +24,8 @@ services:
       context: https://github.com/jancelin/docker-collec.git#master:/build
       dockerfile: Dockerfile.rpi_collec
       args:
-        - ZIP=develop.zip
-        - REP=collec-develop
+        - ZIP=master.zip
+        - REP=collec-master
     #PC
     #image: jancelin/docker-collec:latest
     restart: always
