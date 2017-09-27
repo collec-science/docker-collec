@@ -28,8 +28,8 @@ RUN usermod -a -G ssl-cert www-data
 
 #Variable de dépot et de nom de dossier
 
-ENV ZIP feature_metadata.zip
-ENV REP collec-feature_metadata
+ENV ZIP v1.1.0a.zip #feature_metadata.zip
+ENV REP collec-1.1.0a #collec-feature_metadata
 
 # Install Collec
 ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
