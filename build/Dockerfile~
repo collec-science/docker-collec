@@ -13,7 +13,6 @@ RUN a2enmod ssl; a2enmod headers; a2enmod rewrite
 # Generate certificate
 RUN mkdir /etc/apache2/ssl
 RUN /usr/sbin/make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/apache2/ssl/apache.pem
-/etc/ssl/certs/ssl-cert-snakeoil.pem
 
 # Copy config site available
 ADD 000-default.conf /etc/apache2/sites-available/collec.conf
