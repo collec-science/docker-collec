@@ -1,0 +1,3 @@
+APPLI_titre=COLLEC-SCIENCE PROTOTYPE v1.1
+BDD_schema=col, public, gacl
+GACL_aco=col
