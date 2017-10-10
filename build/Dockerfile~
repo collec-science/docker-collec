@@ -13,18 +13,21 @@ RUN a2enmod ssl; a2enmod headers; a2enmod rewrite
 # Generate certificate
 RUN mkdir /etc/apache2/ssl
 RUN /usr/sbin/make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/apache2/ssl/apache.pem
+/etc/ssl/certs/ssl-cert-snakeoil.pem
 
 # Copy config site available
-ADD 000-default.conf /etc/apache2/sites-available/000-default.conf
+ADD 000-default.conf /etc/apache2/sites-available/collec.conf
 ADD default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 
 # Activ site
 RUN a2ensite 000-default.conf; a2ensite default-ssl.conf
 
 # Droits
-RUN chmod -R g+r /etc/ssl/private
 RUN command addgroup --system 'ssl-cert'
-RUN usermod -a -G ssl-cert www-data
+RUN chmod -R g+r /etc/ssl/private
+RUN usermod www-data -a -G ssl-cert
+RUN a2ensite default-ssl
+RUN a2ensite collec
 
 #Variable de dépot et de nom de dossier
 
@@ -37,22 +40,25 @@ ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
 RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     rm /var/www/html/$ZIP
     
-#modif chemin relatif
-
-
-# tempates-c
-RUN mkdir /var/www/html/$REP/display/templates_c
-RUN chmod 777 /var/www/html/$REP/display/templates_c && chmod 777 /var/www/html/$REP/temp
+#positionner les droits
+WORKDIR /var/www/html/$REP
+RUN cp ../param/* param/ \
+    chmod -R 770 . \
+    setfacl -R -m u:www-data:rx . \
+    setfacl -R -m d:u:www-data:rx . \
+    mkdir display/templates_c \
+    setfacl -R -m u:www-data:rwx display/templates_c \
+    setfacl -R -m d:u:www-data:rwx display/templates_c \
+    setfacl -R -m u:www-data:rwx temp  \
+    setfacl -R -m d:u:www-data:rwx temp  \
+    setfacl -R -m d:o::- .  \
+    rm -Rf database  \
+    rm -Rf test  \
+    rm -f param.ini
 
 # Param
 #ADD param.inc.php /var/www/html/$REP/param/param.inc.php
 ADD param.ini /var/www/html/$REP/param.ini
-
-# Droits
-RUN chown -hR www-data:users /var/www/html/$REP && \
-    chmod -R 755 /var/www/html/$REP && \
-    chmod -R 777 /var/www/html/$REP/temp && \
-    chmod -R 777 /var/www/html/$REP/display/templates_c
 
 #Start apache2
 ADD start.sh /start.sh

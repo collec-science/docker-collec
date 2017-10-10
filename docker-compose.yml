@@ -1,4 +1,3 @@
-
 version: '2'
 services:
 
@@ -13,8 +12,8 @@ services:
       context: https://github.com/jancelin/docker-collec.git#master:/db
       dockerfile: Dockerfile
     restart: always
-#    ports:
-#     - "5433:5432"
+    ports:
+     - "5433:5432"
     expose:
       - 5432
     volumes:
@@ -30,14 +29,7 @@ services:
         #- ZIP=master.zip
         #- REP=collec-master
     #PC
-    #image: jancelin/docker-collec:latest
-    build:
-      #container_name: collec
-      context: https://github.com/jancelin/docker-collec.git#master:/build
-      dockerfile: Dockerfile
-      args:
-        - ZIP=master.zip
-        - REP=collec-master
+    image: jancelin/docker-collec:latest
     restart: always
     ports:
       - 88:80
