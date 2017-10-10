@@ -41,19 +41,19 @@ RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     
 #positionner les droits
 WORKDIR /var/www/html/$REP
-RUN cp ../param/* param/ \
-    chmod -R 770 . \
-    setfacl -R -m u:www-data:rx . \
-    setfacl -R -m d:u:www-data:rx . \
-    mkdir display/templates_c \
-    setfacl -R -m u:www-data:rwx display/templates_c \
-    setfacl -R -m d:u:www-data:rwx display/templates_c \
-    setfacl -R -m u:www-data:rwx temp  \
-    setfacl -R -m d:u:www-data:rwx temp  \
-    setfacl -R -m d:o::- .  \
-    rm -Rf database  \
-    rm -Rf test  \
-    rm -f param.ini
+RUN cp ../param/* param/ 
+RUN    chmod -R 770 .
+RUN    setfacl -R -m u:www-data:rx . 
+RUN    setfacl -R -m d:u:www-data:rx . 
+RUN    mkdir display/templates_c 
+RUN    setfacl -R -m u:www-data:rwx display/templates_c 
+RUN    setfacl -R -m d:u:www-data:rwx display/templates_c 
+RUN    setfacl -R -m u:www-data:rwx temp  
+RUN    setfacl -R -m d:u:www-data:rwx temp  
+RUN    setfacl -R -m d:o::- .  
+RUN    rm -Rf database  
+RUN    rm -Rf test  
+RUN    rm -f param.ini
 
 # Param
 #ADD param.inc.php /var/www/html/$REP/param/param.inc.php
