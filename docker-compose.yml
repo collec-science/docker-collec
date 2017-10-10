@@ -4,11 +4,14 @@ services:
 
   postgiscollec:
     #RASPBERRY PI
-    build:
-      context: https://github.com/jancelin/docker-collec.git#master:/db
-      dockerfile: Dockerfile.raspberry
+    #build:
+      #context: https://github.com/jancelin/docker-collec.git#master:/db
+      #dockerfile: Dockerfile.raspberry
     #PC
     #image: jancelin/docker-collec:postgisCollec
+    build:
+      context: https://github.com/jancelin/docker-collec.git#master:/db
+      dockerfile: Dockerfile
     restart: always
 #    ports:
 #     - "5433:5432"
@@ -19,24 +22,31 @@ services:
 
   collec:
     #RASPBERRY PI
+    #build:
+      #container_name: collec
+      #context: https://github.com/jancelin/docker-collec.git#master:/build
+      #dockerfile: Dockerfile.rpi_collec
+      #args:
+        #- ZIP=master.zip
+        #- REP=collec-master
+    #PC
+    #image: jancelin/docker-collec:latest
     build:
       #container_name: collec
       context: https://github.com/jancelin/docker-collec.git#master:/build
-      dockerfile: Dockerfile.rpi_collec
+      dockerfile: Dockerfile
       args:
         - ZIP=master.zip
         - REP=collec-master
-    #PC
-    #image: jancelin/docker-collec:latest
     restart: always
     ports:
-      - 80:80
-      - 443:443
+      - 88:80
+      - 445:443
     links:
       - postgiscollec:postgiscollec
 
 # Collec est accessible à cette adresse après 2 minutes (construction de la base de donnée):
-#                   https://mon_ip/collec-feature_metadata
+#                   https://mon_ip/collec-master
 
 # Login: admindemo
 # Password: admin_007
