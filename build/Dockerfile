@@ -41,7 +41,7 @@ RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     
 #positionner les droits
 WORKDIR /var/www/html/$REP
-RUN cp ./param/* param/ 
+#RUN cp ./param/* param/ 
 RUN    chmod -R 770 .
 RUN    setfacl -R -m u:www-data:rx . 
 RUN    setfacl -R -m d:u:www-data:rx . 
