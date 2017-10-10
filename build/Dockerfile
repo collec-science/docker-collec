@@ -5,7 +5,7 @@ MAINTAINER  Julien Ancelin from Irstea/collec \
 RUN echo "deb    http://http.debian.net/debian sid main " >> /etc/apt/sources.list
 RUN gpg --keyserver pgpkeys.mit.edu --recv-key 010908312D230C5F
 RUN gpg --export 010908312D230C5F | apt-key add -
-RUN apt-get -y update
+RUN apt-get -y update 
 RUN apt-get -t sid install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim
 RUN apt-get clean && apt-get -y autoremove
 RUN a2enmod ssl; a2enmod headers; a2enmod rewrite
@@ -41,7 +41,7 @@ RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     
 #positionner les droits
 WORKDIR /var/www/html/$REP
-RUN cp ../param/* param/ 
+RUN cp ./param/* param/ 
 RUN    chmod -R 770 .
 RUN    setfacl -R -m u:www-data:rx . 
 RUN    setfacl -R -m d:u:www-data:rx . 
