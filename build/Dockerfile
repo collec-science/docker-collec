@@ -36,13 +36,17 @@ ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
 
 RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     rm /var/www/html/$ZIP
+    
+#modif chemin relatif
+
 
 # tempates-c
 RUN mkdir /var/www/html/$REP/display/templates_c
 RUN chmod 777 /var/www/html/$REP/display/templates_c && chmod 777 /var/www/html/$REP/temp
 
 # Param
-ADD param.inc.php /var/www/html/$REP/param/param.inc.php
+#ADD param.inc.php /var/www/html/$REP/param/param.inc.php
+ADD param.ini /var/www/html/$REP/param.ini
 
 # Droits
 RUN chown -hR www-data:users /var/www/html/$REP && \
