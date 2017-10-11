@@ -18,7 +18,7 @@ ADD param.inc.php /var/www/html/$REP/param/param.inc.php
 
 # Droits
 WORKDIR /var/www/html/
-RUN mkdir $REP/display/templates_c &&\
+RUN mkdir /var/www/html/$REP/display/templates_c &&\
     chown -R root:www-data $REP &&\
     chmod -R g+r,g-w $REP &&\
     chmod -R g+w $REP/temp &&\
