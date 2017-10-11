@@ -17,9 +17,9 @@ RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
 ADD param.inc.php /var/www/html/$REP/param/param.inc.php
 
 # Droits
-WORKDIR /var/www/html/
-RUN mkdir /var/www/html/$REP/display/templates_c &&\
-    chown -R root:www-data $REP &&\
-    chmod -R g+r,g-w $REP &&\
-    chmod -R g+w $REP/temp &&\
-    chmod -R g+w $REP/display/templates_c 
+WORKDIR /var/www/html/$REP
+RUN mkdir display/templates_c 
+RUN chown -R root:www-data . &&\
+    chmod -R g+r,g-w . &&\
+    chmod -R g+w temp &&\
+    chmod -R g+w display/templates_c 
