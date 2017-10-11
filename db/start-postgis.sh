@@ -106,7 +106,7 @@ else
     # Note the dockerfile must have put the postgis.sql and spatialrefsys.sql scripts into /root/
     # We use template0 since we want t different encoding to template1
     echo "Creating template postgis"
-    su - postgres -c "createdb template_postgis -E UTF8 -T template0"y
+    su - postgres -c "createdb template_postgis -E UTF8 -T template0"
     echo "Enabling template_postgis as a template"
     CMD="UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template_postgis';"
     su - postgres -c "psql -c \"$CMD\""
