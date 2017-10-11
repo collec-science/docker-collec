@@ -132,7 +132,7 @@ else
 
     #initialisation de la base collec + lancement du script de fabrication de la base
 
-    su - postgres -c " createdb -O $POSTGRES_USER  -T template_postgis  collec "
+    su - postgres -c " createdb -O $POSTGRES_USER -T template_postgis  collec "
     su - postgres -c " psql collec -c 'CREATE EXTENSION postgis_topology ;'"
    # su - postgres -c " psql collec -c 'CREATE EXTENSION hstore ;'"
     su - postgres -c " psql collec -f /collec.sql "
