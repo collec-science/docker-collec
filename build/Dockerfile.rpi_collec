@@ -19,7 +19,7 @@ RUN chmod 777 /var/www/html/$REP/display/templates_c && chmod 777 /var/www/html/
 
 # Param
 ADD param.inc.php /var/www/html/$REP/param/param.inc.php
-ADD param.ini /var/www/html/$REP/param.ini
+#ADD param.ini /var/www/html/$REP/param.ini
 
 # Droits
 RUN chown -hR www-data:users /var/www/html/$REP && \

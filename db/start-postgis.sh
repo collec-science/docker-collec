@@ -76,7 +76,6 @@ fi
 echo "postgresql user: $POSTGRES_USER" > /tmp/PGPASSWORD.txt
 echo "postgresql password: $POSTGRES_PASS" >> /tmp/PGPASSWORD.txt
 su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS';\""
-echo " USER $POSTGRES_USER created "
 
 trap "echo \"Sending SIGTERM to postgres\"; killall -s SIGTERM postgres" SIGTERM
 
@@ -133,10 +132,10 @@ else
 
     #initialisation de la base collec + lancement du script de fabrication de la base
 
-    su - postgres -c " createdb -O $POSTGRES_USER -T template_postgis $DB "
-    su - postgres -c " psql $DB -c 'CREATE EXTENSION postgis_topology ;'"
-    su - postgres -c " psql $DB -f /$DB.sql "
-    echo "$DB & data created "
+    su - postgres -c " createdb -O collec -T template_postgis collec "
+    su - postgres -c " psql collec -c 'CREATE EXTENSION postgis_topology ;'"
+    su - postgres -c " psql collec -f /collec.sql "
+    echo "DB COLLEC & data created "
 
 fi
 # This should show up in docker logs afterwards
