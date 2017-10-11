@@ -76,6 +76,7 @@ fi
 echo "postgresql user: $POSTGRES_USER" > /tmp/PGPASSWORD.txt
 echo "postgresql password: $POSTGRES_PASS" >> /tmp/PGPASSWORD.txt
 su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS';\""
+echo " $POSTGRES_USER created "
 
 trap "echo \"Sending SIGTERM to postgres\"; killall -s SIGTERM postgres" SIGTERM
 
@@ -105,7 +106,7 @@ else
     # Note the dockerfile must have put the postgis.sql and spatialrefsys.sql scripts into /root/
     # We use template0 since we want t different encoding to template1
     echo "Creating template postgis"
-    su - postgres -c "createdb template_postgis -E UTF8 -T template0"
+    su - postgres -c "createdb template_postgis -E UTF8 -T template0"y
     echo "Enabling template_postgis as a template"
     CMD="UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template_postgis';"
     su - postgres -c "psql -c \"$CMD\""
@@ -132,10 +133,10 @@ else
 
     #initialisation de la base collec + lancement du script de fabrication de la base
 
-    su - postgres -c " createdb -O $POSTGRES_USER -T template_postgis  collec "
-    su - postgres -c " psql collec -c 'CREATE EXTENSION postgis_topology ;'"
-   # su - postgres -c " psql collec -c 'CREATE EXTENSION hstore ;'"
-    su - postgres -c " psql collec -f /collec.sql "
+    su - postgres -c " createdb -O $POSTGRES_USER -T template_postgis $DB "
+    su - postgres -c " psql $DB -c 'CREATE EXTENSION postgis_topology ;'"
+    su - postgres -c " psql $DB -f /$DB.sql "
+    echo "$DB & data created "
 
 fi
 # This should show up in docker logs afterwards
