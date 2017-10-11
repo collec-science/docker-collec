@@ -9,7 +9,7 @@
  /*
   * Affichage des erreurs et des messages
   */
-$APPLI_modeDeveloppement = false;
+$APPLI_modeDeveloppement = true;
 $_ERROR_display = 0;
 $ERROR_level = E_ERROR ;
 $OBJETBDD_debugmode = 1;
@@ -25,7 +25,7 @@ $APPLI_code = 'laboXX';
 /*
  * titre de l'application affiche en haut d'ecran
  */
-$APPLI_titre = "Collec - labo XX";
+$APPLI_titre = "Collec";
 
 /*
  * Mode d'identification
@@ -132,5 +132,8 @@ $paramIniFile = "./param.ini";
 $SMARTY_variables["melappli"] = $APPLI_mail;
 $SMARTY_variables["ident_type"] = $ident_type;
 $SMARTY_variables["appliAssist"] = $APPLI_assist_address;
+$SMARTY_variables["display"] = "display";
+$SMARTY_variables["favicon"] = "favicon.png";
+
 ?>
 

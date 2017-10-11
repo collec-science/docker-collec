@@ -13,16 +13,13 @@ ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
 RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     rm /var/www/html/$ZIP
 
-# tempates-c
-RUN mkdir /var/www/html/$REP/display/templates_c
-RUN chmod 777 /var/www/html/$REP/display/templates_c && chmod 777 /var/www/html/$REP/temp
-
 # Param
 ADD param.inc.php /var/www/html/$REP/param/param.inc.php
-#ADD param.ini /var/www/html/$REP/param.ini
 
 # Droits
-RUN chown -hR www-data:users /var/www/html/$REP && \
-    sudo chmod -R 755 /var/www/html/$REP && \
-    sudo chmod -R 777 /var/www/html/$REP/temp && \
-    sudo chmod -R 777 /var/www/html/$REP/display/templates_c
+WORKDIR /var/www/html/
+RUN mkdir $REP/display/templates_c
+    chown -R root:www-data $REP &&\
+    chmod -R g+r,g-w $REP &&\
+    chmod -R g+w $REP/temp &&\
+    chmod -R g+w $REP/display/templates_c 
