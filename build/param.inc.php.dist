@@ -17,11 +17,11 @@ $OBJETBDD_debugmode = 1;
 /*
  * code de l'application dans la gestion des droits
  */
-$GACL_aco = "zaalpes";
+$GACL_aco = "col";
 /*
  * Code de l'application - impression sur les etiquettes
  */
-$APPLI_code = 'zaalpes';
+$APPLI_code = 'proto';
 /*
  * Mode d'identification
  * BDD : uniquement a partir des comptes internes
@@ -37,18 +37,18 @@ $ident_type = "BDD";
 /*
  * Parametres concernant la base de donnees
  */
-$BDD_login = "collec";
-$BDD_passwd = "collec";
-$BDD_dsn = "pgsql:host=postgiscollec;dbname=collec;sslmode=require";
-$BDD_schema = "zaalpes,gacl,public";
+$BDD_login = "proto";
+$BDD_passwd = "proto";
+$BDD_dsn = "pgsql:host=localhost;dbname=proto;sslmode=require";
+$BDD_schema = "col,gacl,public";
 
 /*
  * Rights management, logins and logs records database
  */
-$GACL_dblogin = "collec";
-$GACL_dbpasswd = "collec";
-$GACL_aco = "zaalpes";
-$GACL_dsn = "pgsql:host=postgiscollec;dbname=collec;sslmode=require";
+$GACL_dblogin = "proto";
+$GACL_dbpasswd = "proto";
+$GACL_aco = "col";
+$GACL_dsn = "pgsql:host=localhost;dbname=proto;sslmode=require";
 $GACL_schema = "gacl";
 
 /*
@@ -100,25 +100,4 @@ $paramIniFile = "./param.ini";
  */
 $SMARTY_variables["melappli"] = $APPLI_mail;
 $SMARTY_variables["ident_type"] = $ident_type;
-/*
-        *  * Affichage par defaut des cartes Openstreetmap
-        *   */
-$mapDefaultX = -1.56;
-$mapDefaultY = 46.10;
-$mapDefaultZoom = 7;
-/*
-        *  * Variables de base de l'application
-        *   */
-$APPLI_mail = "geopoppy@geopoppy.com";
-$APPLI_nom = "Prototype d'application";
-//$APPLI_code = 'collec-develop';
-$APPLI_fds = "display/CSS/blue.css";
-$APPLI_address = "http://172.24.1.1/collec-develop";
-$APPLI_modeDeveloppement = false;
-$APPLI_modeDeveloppementDroit = false;
-$APPLI_utf8 = true;
-$APPLI_menufile = "param/menu.xml";
-$APPLI_temp = "temp";
-$APPLI_titre = "Gestion des échantillons ZA Alpes";
 ?>
-
