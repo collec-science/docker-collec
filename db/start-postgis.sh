@@ -76,7 +76,7 @@ fi
 echo "postgresql user: $POSTGRES_USER" > /tmp/PGPASSWORD.txt
 echo "postgresql password: $POSTGRES_PASS" >> /tmp/PGPASSWORD.txt
 su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS';\""
-echo " $POSTGRES_USER created "
+echo " USER $POSTGRES_USER created "
 
 trap "echo \"Sending SIGTERM to postgres\"; killall -s SIGTERM postgres" SIGTERM
 
