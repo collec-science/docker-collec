@@ -21,5 +21,5 @@ WORKDIR /var/www/html/$REP
 RUN mkdir -p display/templates_c 
 RUN chown -R root:www-data . &&\
     chmod -R g+r,g-w . &&\
-    chmod -R g+w temp &&\
-    chmod -R g+w display/templates_c 
+    chmod -R g+w /var/www/html/$REP/temp &&\
+    chmod -R g+w /var/www/html/$REP/display/templates_c 
