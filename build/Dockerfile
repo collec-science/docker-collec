@@ -4,6 +4,9 @@ MAINTAINER  Julien Ancelin from Irstea/collec \
             https://github.com/Irstea/collec
 #RUN gpg --keyserver keyserver.ubuntu.com --recv 010908312D230C5F
 #RUN gpg --export --armor 010908312D230C5F | apt-key add -
+RUN apt-get install -y software-properties-common dirmngr
+RUN add-apt-repository "deb http://ppa.launchpad.net/webupd8team/java/ubuntu yakkety main"
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C2518248EEA14886
 RUN apt-get -y update 
 #RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim acl
 RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl  oracle-java8-installer php-gd fop php-imagick unzip ssl-cert vim 
