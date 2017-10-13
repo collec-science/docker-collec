@@ -121,9 +121,9 @@ $paramIniFile = "./param.ini";
  * Si l'application n'est pas configuree avec un DNS unique 
  * (chemin de type : https://serveur/collec-science/)
  */
- //$SMARTY_variables["display"] = "display";
- //$SMARTY_variables["favicon"] = "favicon.png";
- //$APPLI_isFullDns = false;
+ $SMARTY_variables["display"] = "display";
+ $SMARTY_variables["favicon"] = "favicon.png";
+ $APPLI_isFullDns = false;
 
 /*
  * Parametres SMARTY complementaires, charges systematiquement
@@ -132,8 +132,6 @@ $paramIniFile = "./param.ini";
 $SMARTY_variables["melappli"] = $APPLI_mail;
 $SMARTY_variables["ident_type"] = $ident_type;
 $SMARTY_variables["appliAssist"] = $APPLI_assist_address;
-$SMARTY_variables["display"] = "display";
-$SMARTY_variables["favicon"] = "favicon.png";
 
 ?>
 
