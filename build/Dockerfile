@@ -2,10 +2,8 @@ FROM debian:jessie
 MAINTAINER  Julien Ancelin from Irstea/collec \
             Logiciel diffusé sous licence AGPL \
             https://github.com/Irstea/collec
-RUN    gpg --keyserver pgpkeys.mit.edu --recv-key 8B48AD6246925553
+RUN    apt-key adv --recv-key --keyserver keyserver.ubuntu.com 8B48AD6246925553
 RUN    gpg -a --export 8B48AD6246925553 | apt-key add -
-RUN    gpg --keyserver pgpkeys.mit.edu --recv-key 7638D0442B90D010
-RUN    gpg -a --export 7638D0442B90D010 | apt-key add -
 RUN apt-get -y update 
 #RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim acl
 RUN apt-get -t sid install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim 
