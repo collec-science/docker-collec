@@ -28,37 +28,26 @@ RUN chmod -R g+r /etc/ssl/private
 RUN usermod www-data -a -G ssl-cert
 RUN a2ensite default-ssl
 RUN a2ensite collec
-
 #Variable de dépot et de nom de dossier
-
-ENV ZIP master.zip 
-ENV REP collec-master
+ARG ZIP
+ARG REP
 
 # Install Collec
 ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
 
 RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     rm /var/www/html/$ZIP
-    
-#positionner les droits
-WORKDIR /var/www/html/$REP
-#RUN cp ./param/* param/ 
-RUN    chmod -R 770 .
-RUN    setfacl -R -m u:www-data:rx . 
-RUN    setfacl -R -m d:u:www-data:rx . 
-RUN    mkdir display/templates_c 
-RUN    setfacl -R -m u:www-data:rwx display/templates_c 
-RUN    setfacl -R -m d:u:www-data:rwx display/templates_c 
-RUN    setfacl -R -m u:www-data:rwx temp  
-RUN    setfacl -R -m d:u:www-data:rwx temp  
-RUN    setfacl -R -m d:o::- .  
-RUN    rm -Rf database  
-RUN    rm -Rf test  
-RUN    rm -f param.ini
 
 # Param
-#ADD param.inc.php /var/www/html/$REP/param/param.inc.php
-#ADD param.ini /var/www/html/$REP/param.ini
+ADD param.inc.php /var/www/html/$REP/param/param.inc.php
+
+# Droits
+WORKDIR /var/www/html/$REP
+RUN mkdir -p display/templates_c 
+RUN chown -R root:www-data . &&\
+    chmod -R g+r,g-w . &&\
+    chmod -R g+w /var/www/html/$REP/temp &&\
+chmod -R g+w /var/www/html/$REP/display/templates_c 
 
 #Start apache2
 ADD start.sh /start.sh
