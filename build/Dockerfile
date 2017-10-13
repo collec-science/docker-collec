@@ -6,7 +6,7 @@ MAINTAINER  Julien Ancelin from Irstea/collec \
 #RUN gpg --export --armor 010908312D230C5F | apt-key add -
 RUN apt-get -y update 
 #RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim acl
-RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl  default-jre-headless  openjdk-8-jre default-jre php-gd fop php-imagick unzip ssl-cert vim 
+RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl  openjdk-8-jre php-gd fop php-imagick unzip ssl-cert vim 
 RUN apt-get clean && apt-get -y autoremove
 RUN a2enmod ssl; a2enmod headers; a2enmod rewrite
 
