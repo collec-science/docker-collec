@@ -1,4 +1,4 @@
-FROM  debian:stretch-slim
+FROM  debian:stretch
 MAINTAINER  Julien Ancelin from Irstea/collec \
             Logiciel diffusé sous licence AGPL \
             https://github.com/Irstea/collec
