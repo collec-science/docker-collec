@@ -29,8 +29,8 @@ RUN usermod www-data -a -G ssl-cert
 RUN a2ensite default-ssl
 RUN a2ensite collec
 #Variable de dépot et de nom de dossier
-ARG ZIP
-ARG REP
+ARG ZIP=master.zip
+ARG REP=collec-master
 
 # Install Collec
 ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
