@@ -12,15 +12,15 @@ RUN apt-get clean && apt-get -y autoremove
 RUN a2enmod ssl; a2enmod headers; a2enmod rewrite
 
 # Generate certificate
-#RUN mkdir /etc/apache2/ssl
-#RUN /usr/sbin/make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/apache2/ssl/apache.pem
+RUN mkdir /etc/apache2/ssl
+RUN /usr/sbin/make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/apache2/ssl/apache.pem
 
 # Copy config site available
 ADD 000-default.conf /etc/apache2/sites-available/collec.conf
 ADD default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 
 # Activ site
-#RUN a2ensite 000-default.conf; a2ensite default-ssl.conf
+RUN a2ensite 000-default.conf; a2ensite default-ssl.conf
 
 # Droits
 #RUN command addgroup --system 'ssl-cert'
@@ -47,7 +47,7 @@ RUN mkdir -p display/templates_c
 RUN chown -R root:www-data . &&\
     chmod -R g+r,g-w . &&\
     chmod -R g+w /var/www/html/$REP/temp &&\
-chmod -R g+w /var/www/html/$REP/display/templates_c 
+    chmod -R g+w /var/www/html/$REP/display/templates_c 
 
 #Start apache2
 ADD start.sh /start.sh
