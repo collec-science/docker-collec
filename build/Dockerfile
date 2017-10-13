@@ -1,9 +1,9 @@
-FROM debian:jessie
+FROM  debian:jessie-slim
 MAINTAINER  Julien Ancelin from Irstea/collec \
             Logiciel diffusé sous licence AGPL \
             https://github.com/Irstea/collec
-RUN    gpg --keyserver subkeys.pgp.net --recv-keys 55BE302B
-RUN    gpg -a --export 55BE302B | apt-key add -
+RUN gpg --keyserver keyserver.ubuntu.com --recv 073D307A618E5811
+RUN gpg --export --armor 073D307A618E5811 | apt-key add -
 RUN apt-get -y update 
 #RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim acl
 RUN apt-get -t sid install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim 
