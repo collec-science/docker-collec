@@ -60,6 +60,13 @@ wget --no-check-certificate -P /home/pi https://raw.githubusercontent.com/jancel
 * Pour changer la version cible de collec, éditer https://raw.githubusercontent.com/jancelin/docker-collec/master/build/Dockerfile.raspberry  pour remplacer ZIP et REP par les valeurs cibles
 REP définit l'adresse Web qui sera servie par le pi. 
 
+Par exemple : https://raspberry.local/collec-master 
+Si
+```
+ENV ZIP master.zip
+ENV REP collec-master
+```
+
 Par exemple : https://raspberry.local/collec-feature_metadata 
 Si
 ```
@@ -80,11 +87,11 @@ ENV REP collec-develop
 docker-compose up -d
 ```
 
-* Attendre 2 minutes que la base soit généré et se rendre sur https://raspberry.local/collec-feature_metadata pour accéder à la démo.
+* Attendre 2 minutes que la base soit générée et se rendre sur https://raspberry.local/collec-master pour accéder à la démo.
 
-> Login: admindemo
+> Login: admin
 
-> MDP: admin_007
+> MDP: password
 
 --------------------------------------------------------------------------------
 
