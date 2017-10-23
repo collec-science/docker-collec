@@ -35,7 +35,7 @@ services:
       - postgiscollec:postgiscollec
       
 # Collec est accessible à cette adresse après 2 minutes (construction de la base de donnée):
-#                   https://mon_ip/collec-master
+#                   https://mon_ip/collec-release-1.2
 
 # Login: admin
 # Password: password
