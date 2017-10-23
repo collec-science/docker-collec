@@ -10,8 +10,8 @@
   * Affichage des erreurs et des messages
   */
 $APPLI_modeDeveloppement = true;
-$_ERROR_display = 0;
-$ERROR_level = E_ERROR ;
+$_ERROR_display = 1;
+$ERROR_level = E_ALL ;
 $OBJETBDD_debugmode = 1;
 
 /*
@@ -20,12 +20,13 @@ $OBJETBDD_debugmode = 1;
 $GACL_aco = "col";
 /*
  * Code de l'application - impression sur les etiquettes
+ * Obsolete : a renseigner dans administration > Parametres de l'application
  */
-$APPLI_code = 'laboXX';
+//$APPLI_code = 'laboXX';
 /*
  * titre de l'application affiche en haut d'ecran
  */
-$APPLI_titre = "Collec";
+$APPLI_titre = "Collec - test version 1.2";
 
 /*
  * Mode d'identification
@@ -44,7 +45,7 @@ $ident_type = "BDD";
  */
 $BDD_login = "collec";
 $BDD_passwd = "collec";
-$BDD_dsn = "pgsql:host=postgiscollec;dbname=collec";
+$BDD_dsn = "pgsql:host=localhost;dbname=collec";
 $BDD_schema = "col,gacl,public";
 
 /*
@@ -53,7 +54,7 @@ $BDD_schema = "col,gacl,public";
 $GACL_dblogin = "collec";
 $GACL_dbpasswd = "collec";
 $GACL_aco = "col";
-$GACL_dsn = "pgsql:host=postgiscollec;dbname=collec";
+$GACL_dsn = "pgsql:host=localhost;dbname=collec";
 $GACL_schema = "gacl";
 
 /*
@@ -78,6 +79,14 @@ $APPLI_mail = "nepasrepondre@collec.adressecomplete.com";
  * necessite que l'envoi de mails soit possible ($MAIL_enabled = 1)
  */
 $APPLI_lostPassword = 1;
+
+/*
+ * Impression directe vers une imprimante a etiquettes
+ * connectee au serveur
+ * par defaut, lpr. Si lp, decommenter la ligne
+ */
+$APPLI_print_direct_command = "lp";
+
 /*
  * Configuration LDAP
  */
@@ -121,9 +130,9 @@ $paramIniFile = "./param.ini";
  * Si l'application n'est pas configuree avec un DNS unique 
  * (chemin de type : https://serveur/collec-science/)
  */
- $SMARTY_variables["display"] = "display";
- $SMARTY_variables["favicon"] = "favicon.png";
- $APPLI_isFullDns = false;
+$SMARTY_variables["display"] = "display";
+$SMARTY_variables["favicon"] = "favicon.png";
+$APPLI_isFullDns = false;
 
 /*
  * Parametres SMARTY complementaires, charges systematiquement
@@ -132,6 +141,4 @@ $paramIniFile = "./param.ini";
 $SMARTY_variables["melappli"] = $APPLI_mail;
 $SMARTY_variables["ident_type"] = $ident_type;
 $SMARTY_variables["appliAssist"] = $APPLI_assist_address;
-
 ?>
-
