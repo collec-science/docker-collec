@@ -23,14 +23,15 @@ services:
       context: https://github.com/jancelin/docker-collec.git#master:/build
       dockerfile: Dockerfile.rpi_collec
       args:
-        - ZIP=release-1.2.zip
-        - REP=collec-release-1.2
+        - ZIP=master.zip
+        - REP=collec-master
     #PC
     #image: jancelin/docker-collec:latest
     restart: always
     ports:
       - 80:80
       - 443:443
+      - 632:631
     links:
       - postgiscollec:postgiscollec
       
