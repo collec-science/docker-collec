@@ -3,10 +3,22 @@ MAINTAINER  Julien Ancelin from Irstea/collec \
             Logiciel diffusé sous licence AGPL \
             https://github.com/Irstea/collec
 
+RUN echo "deb    http://http.debian.net/debian sid main " >> /etc/apt/sources.list
+RUN gpg --keyserver hkp://keys.gnupg.net:80 --recv-keys EF0F382A1A7B6500
+RUN gpg --export EF0F382A1A7B6500 | apt-key add -
+RUN gpg --keyserver hkp://keys.gnupg.net:80 --recv-keys 7638D0442B90D010
+RUN gpg --export 7638D0442B90D010 | apt-key add -
+
 RUN apt-get -y update
-RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim cups
+RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim
+RUN apt-get -t sid install cups
+
 RUN apt-get clean && apt-get -y autoremove
 RUN a2enmod ssl; a2enmod headers; a2enmod rewrite
+
+# add pi as CUPS user
+sudo useradd pi -p raspberry -g lpadmin
+
 # Generate certificate
 RUN mkdir /etc/apache2/ssl
 RUN /usr/sbin/make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/apache2/ssl/apache.pem
