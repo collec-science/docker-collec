@@ -17,7 +17,7 @@ RUN apt-get -t sid install cups
 RUN apt-get clean && apt-get -y autoremove
 
 # add pi as CUPS user (in group lpadmin)
-sudo useradd pi -p raspberry -g lpadmin
+RUN useradd pi -p raspberry -g lpadmin
 
 RUN a2enmod ssl; a2enmod headers; a2enmod rewrite
 
