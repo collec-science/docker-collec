@@ -1,27 +1,37 @@
 ------------------------------------------------------------------------------
--- HOWTO collec in Docker
--- Christine Plumejeaud, 04 fevrier 2018 / mise à jour le 12/02/2018
+# HOWTO collec in Docker
+# Christine Plumejeaud, 04 fevrier 2018 / mise à jour le 12/02/2018
 ------------------------------------------------------------------------------
-# Lire le readme https://github.com/jancelin/docker-collec
-# Il explique comment installer Docker et Docker-compose
-# J'ai refais le Docker-compose.yml ainsi que les builds d'Apache et Postgres
-# En particulier, la dépendance à kartoza/postgis:9.5-2.2 a été supprimée
-# L'application collec-web utilise collec-db, en postgres 9.6 et postgis 2.3
+
+Lire le readme https://github.com/jancelin/docker-collec
+- Il explique comment installer Docker et Docker-compose
+- On utilise Docker-compose.yml ainsi que les builds d'Apache (./web) et Postgres (./bd)
+- En particulier, la dépendance à kartoza/postgis:9.5-2.2 a été supprimée
+- L'application collec-web utilise collec-db, en postgres 9.6 et postgis 2.3
 
 -----------------------------------------------------
-#Préalable 
+# Préalable 
 -----------------------------------------------------
 
 ## Créer un répertoire d'accueil pour les données de la BDD
 
 ### Maintenant, on utilise les volumes virtuels
->docker volume create --name pgdata -d local
 
->docker volume ls
+https://forums.docker.com/t/trying-to-get-postgres-to-work-on-persistent-windows-mount-two-issues/12456/5
+https://forums.docker.com/t/data-directory-var-lib-postgresql-data-pgdata-has-wrong-ownership/17963/25
+
+```
+docker volume create --name pgdata -d local
+```
+
+```
+docker volume ls
 DRIVER              VOLUME NAME
 local               pgdata
+```
 
->docker volume inspect pgdata
+```
+docker volume inspect pgdata
 [
     {
         "CreatedAt": "2018-02-10T16:32:27Z",
@@ -33,13 +43,14 @@ local               pgdata
         "Scope": "local"
     }
 ]
-
+```
 
 ## Récupérer les sources Docker sur le github (par wget ou SCP ou GIT)
+
 cd docker-collec
 
 
-* Pour changer la version cible de collec, éditer /web/Dockerfile.apache pour remplacer ZIP et REP par les valeurs cibles
+### Pour changer la version cible de collec, éditer /web/Dockerfile.apache pour remplacer ZIP et REP par les valeurs cibles
 REP définit l'adresse Web qui sera servie par le pi. 
 
 Par exemple : https://raspberry.local/collec-master 
@@ -63,14 +74,15 @@ ENV ZIP develop.zip
 ENV REP collec-develop
 ```
 
-* Pour java, le home du jre diffère suivant qu'on compile sous Intel (server Linux ou tablette Windows) ou une puce ARM (Raspberry)
+### Pour java, le home du jre diffère suivant qu'on compile sous Intel (server Linux ou tablette Windows) ou une puce ARM (Raspberry)
 Modifier /web/Dockerfile.apache et commenter la bonne ligne
 
-# Sur Windows ou Linux amd 64 
+* Sur Windows ou Linux amd 64 
 ```
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64/
 ```
-# Sur Raspberry, Rasbian, architecture ARM
+
+* Sur Raspberry, Rasbian, architecture ARM
 ```
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-armel/
 ```
@@ -82,19 +94,27 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-armel/
 Elle dépend de collec-db (image à faire aussi).
 
 ## Tout nettoyer (images et containers)
+```
 docker system prune -a
+```
 
 ## Forcer la recompilation (attention, risque d'écraser la base de données : avoir exporter les données avant)
 - sur Ubuntu xenial : on compile avec Dockerfile  
 - sur Windows : on compile avec Dockerfile.postgres et Dockerfile.apache
  
+```
 docker-compose up --build 
+```
 
 ou pour n'en faire qu'un partie (la BDD par exemple). On a 2 cibles : collec-db et collec-web
+```
 docker-compose up --build -d collec-db
+```
 
 ## Voir les images
+```
 docker images
+```
 
 
 -----------------------------------------------------
@@ -105,7 +125,9 @@ Il instancie une image de collec-web, et écoute sur 4 ports
 80 et 443 pour apache, 632 pour CUPS, et 5432 pour postgres
 
 ## Lancer le container (collec )
+```
 docker-compose up -d collec-web
+```
 
 ## Tester en localhost (sur la tablette Windows, le navigateur cible l'application en local)
 https://127.0.0.1/collec-master
@@ -134,12 +156,13 @@ Accepter le certificat non valide de collec comme une exception.
 
 ## Vérifier l'état des containers (on build une image, qui peut s'exécuter dans plein de containers)
 
+```
 docker ps
 
 CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS              PORTS                                                            NAMES
 ea67f3c305ec        dockerwindows_collec-web   "/bin/sh -c /start.sh"   About an hour ago   Up About an hour    0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp, 0.0.0.0:632->631/tcp   dockerwindows_collec-web_1
 e189b9491c97        dockerwindows_collec-db    "su - postgres -c ..."   2 hours ago         Up 2 hours          0.0.0.0:5432->5432/tcp                                           dockerwindows_collec-db_1
-
+```
 
 Normalement, on peut connecter pgadmin sur le port 5433 ou 5432 du localhost (127.0.0.1) et voir la BDD de collec
 
@@ -148,123 +171,137 @@ Normalement, on peut connecter pgadmin sur le port 5433 ou 5432 du localhost (12
 -----------------------------------------------------
 
 ## Option 1: Dans le container
+```
 psql -U collec -d collec -h collec-db -p 5432 -c "UPDATE  col.dbparam SET dbparam_value='DB_TERRAIN_XX' where dbparam_name='APPLI_code';"
+```
 
-## Option 2: à l'extérieur du container (port 5433 ou 5432 en fonction de la configuration du service collec-db dans docker-compose.yml)
+## Option 2: à l'extérieur du container 
+
+port 5433 ou 5432 en fonction de la configuration du service collec-db dans docker-compose.yml)
+
+```
 psql -U collec -d collec -h 127.0.0.1 -p 5432 -c "UPDATE  col.dbparam SET dbparam_value='DB_TERRAIN_XX' where dbparam_name='APPLI_code';"
+```
 
 ----------------------------------------------------
-## séquence d'arret - rebuild - relance
+# Pour le debug
 ----------------------------------------------------
+
+## séquence d'arret - rebuild - relance
+
+```
 docker stop 28d02c06b9c7
 docker-compose build collec-web
 docker-compose up -d collec-web
+```
 
-
+```
 docker ps
 
 CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS              PORTS                                                            NAMES
 28d02c06b9c7        dockercollec_collec-web          "/bin/sh -c /start.sh"   21 hours ago        Up 2 hours          0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp, 0.0.0.0:632->631/tcp   dockercollec_collec-web_1
+```
 
-docker run -v /c/postgresData:/var/lib/postgresql:z -t dockercollec_collec -l cpp -it collec -p 80:80 -p 5433:5432 -p 443:443 -p 632:631 ZIP=master.zip REP=collec-master bash
 
-docker run -v /c/postgresData:/var/lib/postgresql:z -d=false -p 80:80 -p 5433:5432 -p 443:443 -p 632:631 -l cpp 0f047750a670
+## Stopper le container (stop), puis supprimer l'image (rmi)
 
-### Stopper le container (stop), puis supprimer l'image (rmi)
+```
 docker rmi -f dockercollec_collec
+```
 
+ou : 7d8464109972 : ID de l'image (par docker images)
+```
 docker rmi --force 7d8464109972
--- ID de l'image (par docker images)
+```
 
+```
 docker-compose down
+```
 
-----------------------------------------------------
+
 ## Tagger l'image après build de l'image
-----------------------------------------------------
+
+```
 docker tag b9bb3203d25f cplume/collec_db:v1.12b
+```
 
-docker tag 969fb157610d cplume/collec_db
-
-docker tag 7b86051881f1 cplume/postgres
-
-----------------------------------------------------
 ## Entrer dans un container pour editer le contener
-----------------------------------------------------
+
+Si 28d02c06b9c7 est le CONTAINER ID
+```
 docker exec -it 28d02c06b9c7 bash
-28d02c06b9c7 est le CONTAINER ID
+```
 
-docker stop 28d02c06b9c7
-docker-compose build collec
-docker-compose up -d collec
-
-
--------------------------------------------------------------------------------------------
 ## Récuperer une copie d'un fichier dans un container
--------------------------------------------------------------------------------------------
 
 docker cp <containerId>:/file/path/within/container /host/path/target
 
+```
 docker cp 28d02c06b9c7:/etc/ssl/certs/collec_crt.pem /home/plumegeo/GIT/docker-collec/build/collec_crt.pem
 docker cp 28d02c06b9c7:/etc/ssl/private/collec_key.pem /home/plumegeo/GIT/docker-collec/build/collec_key.pem
+```
 
-docker cp d73e0aeefada:/start-postgis.sh /home/plumegeo/GIT/docker-collec/build/start-postgis.sh
-
-docker cp c5888b124528:/etc/postgresql/9.5/main/postgresql.conf C:\Users\disa\dockerData\docker-collec\docker-collec
-
-docker cp c5888b124528:/etc/ssl/collec.cnf
-
-docker cp C:\Users\disa\dockerData\docker-collec\docker-collec\build\collec_crt.pem c5888b124528:/etc/ssl/certs/collec_crt.pem
-
-cp C:\Users\disa\dockerData\docker-collec\docker-collec\build
-
----------------------------------------------------
-## Permettre l'accès à la BD sur un repertoire externe persistant (pgdata)
----------------------------------------------------
-
-https://forums.docker.com/t/trying-to-get-postgres-to-work-on-persistent-windows-mount-two-issues/12456/5
-https://forums.docker.com/t/data-directory-var-lib-postgresql-data-pgdata-has-wrong-ownership/17963/25
 
 -----------------------------------------------------
-## Accès à la base de données COLLEC
+# Accès à la base de données COLLEC
 -----------------------------------------------------
-### A l'extérieur du container (5432 ou 5433 dépend de la configuration du Docker-compose.yml)
+
+## A l'extérieur du container (5432 ou 5433 dépend de la configuration du Docker-compose.yml)
+```
 psql -U collec -d collec -p 5433 -h 127.0.0.1
 password for collec : collec
 \dt col.*
 30 lignes
+```
 
-### Dans le container collec :
+## Dans le container collec :
+```
 docker exec -it 28d02c06b9c7 bash # 28d02c06b9c7 est l'ID du container (voir docker ps)
 psql -U collec -d collec -p 5432 -h 127.0.0.1
 password for collec : collec
 \dt col.*
 30 lignes
+```
 
-#### Installer plsql dans le container collec SI BESOIN
+### Installer plsql dans le container collec SI BESOIN
+
+```
 vi /etc/apt/sources.list
 deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg-testing main
+```
+
+```
 apt-get install wget
 wget -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
 apt-get update
 sudo apt-get -y install postgresql-client-9.5 --allow-unauthenticated
 psql -U collec -d collec
+```
 
+```
 apt-get install net-tools
+```
+
+```
 netstat -na | grep 54*
 
 tcp        0      0 0.0.0.0:5432            0.0.0.0:*               LISTEN
 tcp6       0      0 :::5432                 :::*                    LISTEN
 tcp6       0      0 :::5433                 :::*                    LISTEN
+```
 
-#### Lancer postgres à la main SI BESOIN
+### Lancer postgres à la main SI BESOIN
+```
 /bin/sh /start-postgis.sh
 Ctrl D
 Ca continue
-
+```
 
 -------------------------------------------------------------------------------------------
-## Configurer apache2 et SSL avec un certificat auto-signe pour le nom de domaine "local-collec"
+# Configurer apache2 et SSL avec un certificat auto-signe pour le nom de domaine "local-collec"
 -------------------------------------------------------------------------------------------
+
+```
 vi /etc/apache2/sites-enabled/default-ssl.conf
 
 <IfModule mod_ssl.c>
@@ -298,13 +335,18 @@ vi /etc/apache2/sites-enabled/default-ssl.conf
 
         </VirtualHost>
 </IfModule>
+```
 
-### Générer un certificat valide
+## Générer un certificat valide
 https://www.juniper.net/documentation/en_US/junos/topics/task/configuration/ex-series-ssl-certificates-generating.html
 https://www.ibm.com/support/knowledgecenter/en/SSWHYP_4.0.0/com.ibm.apimgmt.cmc.doc/task_apionprem_gernerate_self_signed_openSSL.html
 https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-centos-7
 
+```
 openssl req -newkey rsa:2048 -nodes -keyout /etc/ssl/private/collec_key.pem -x509 -days 365 -out /etc/ssl/certs/collec_crt.pem
+```
+
+```
  #CN : local-collec
 
 	Country Name (2 letter code) [AU]:FR
@@ -314,8 +356,10 @@ openssl req -newkey rsa:2048 -nodes -keyout /etc/ssl/private/collec_key.pem -x50
 	Organizational Unit Name (eg, section) []:Zones Ateliers
 	Common Name (e.g. server FQDN or YOUR name) []:local-collec
 	Email Address []:noreply@cnrs.fr
+```
 
 
+```
 vi /etc/ssl/collec.cnf
 [req]
 distinguished_name = req_distinguished_name
@@ -337,32 +381,33 @@ DNS.1 = www.company.com
 DNS.2 = company.com
 DNS.3 = www.company.net
 DNS.4 = company.net
+```
 
+```
 openssl req -new -nodes -newkey rsa:2048 -sha256 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -config /etc/ssl/collec.cnf
+```
 
 
 Donner les droits à apache2 (www-data user) de lire les certificats placés dans /etc/ssl/private
-`cd /etc/ssl`
-`chmod -R g+r  /etc/ssl/private`
-l'utilisateur apache (www-data) est rajouté au groupe ssl-cert
-`usermod www-data -a -G ssl-cert`
+```
+cd /etc/ssl
+chmod -R g+r  /etc/ssl/private
+```
+
+L'utilisateur apache (www-data) est rajouté au groupe ssl-cert
+```
+usermod www-data -a -G ssl-cert
 chown root:ssl-cert /etc/ssl/private/collec_key.pem
 chmod g+r /etc/ssl/private/collec_key.pem
+```
 
-#Combine your key and certificate in a PKCS#12 (P12) bundle:
-#openssl pkcs12 -inkey collec_key.pem -in collec_crt.pem -export -out /etc/apache2/ssl/collec.p12
+Activer les 2 sites (HTTP et HTTPS)
+```
+a2ensite 000-default.conf
+a2ensite default-ssl.conf
+```
 
-#openssl pkcs12 -inkey /etc/ssl/private/collec_key.pem -in /etc/ssl/certs/collec_crt.pem -export -out /etc/ssl/certs/collec.p12
-#Enter Export Password: collec
-#Verifying - Enter Export Password: collec
-
-#openssl pkcs12 -in /etc/ssl/certs/collec.p12 -noout -info
-#set security certificates local /etc/ssl/private/collec.key -out /etc/ssl/certs/collec.crt
-
- Activer les 2 sites (HTTP et HTTPS)
-`a2ensite 000-default.conf`
-`a2ensite default-ssl.conf`
-
+```
 service apache2 reload
+```
 
------------------------------------------------------------------
