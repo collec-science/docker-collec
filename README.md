@@ -45,53 +45,44 @@ sudo apt-get install python-pip
 sudo pip install docker-compose
 ```
 
-* Créer le répertoire de stockage des données
+* Lire docker-things : 
+
+- il n'est plus nécessaire de créer de répertoire de stockage des données mais il faut créer un volume pour Docker
+- il vaut mieux télécharger le contenu du GIT sur votre device (raspberry ou windows 10 pro)
+- il faut personnaliser votre base de données collec12b.sql avec votre propre export de votre base server collec. 
+- modifier en particulier danq collec12b.sql les paramètre de l'application APPLI_code pour donner un nom unique de BDD à votre base collec (Administration --> paramètres de l'application)
+- il faut veiller aux conflits réseau (si une base postgres tourne déja en 5432 ou un apache en 80/443 sur votre machine hors docker, éditer le fichier Docker-compose.yml)
+- il faut éditer Dockerfile.apache pour la variable JAVA_HOME et vérifier qu'elle pointe sur le bon environnement (ARM ou AMD64)
 
 ```
-mkdir -p /home/pi/collec/postgres_data_collec_auto
+docker volume create --name pgdata -d local
 ```
 
-* Récupérer le fichier docker-compose.yml sur /home/pi
-
+- compiler votre image UNE fois 
 ```
-wget --no-check-certificate -P /home/pi https://raw.githubusercontent.com/jancelin/docker-collec/master/docker-compose.yml
-```
-
-* Pour changer la version cible de collec, éditer https://raw.githubusercontent.com/jancelin/docker-collec/master/build/Dockerfile.raspberry  pour remplacer ZIP et REP par les valeurs cibles
-REP définit l'adresse Web qui sera servie par le pi. 
-
-Par exemple : https://raspberry.local/collec-master 
-Si
-```
-ENV ZIP master.zip
-ENV REP collec-master
+docker-compose up --build -d collec-web
 ```
 
-Par exemple : https://raspberry.local/collec-feature_metadata 
-Si
+- exécuter/relancer un container correspondant à cette image
 ```
-ENV ZIP feature_metadata.zip
-ENV REP collec-feature_metadata
+docker-compose up -d collec-web
 ```
 
-Par exemple : https://raspberry.local/collec-develop
-Si
-```
-ENV ZIP develop.zip
-ENV REP collec-develop
-```
+- ne pas oublier sur votre device de déclarer le mapping entre son IP et votre nom de domaine bidon dans /etc/hosts : local-collec
+(lire docker-things)
 
-* Enfin lancer l'installation
+- Attendre 2 minutes que la base soit générée et se rendre sur https://raspberry.local/collec-master pour accéder à la démo.
 
-```
-docker-compose up -d
-```
+https://IP/collec-master
 
-* Attendre 2 minutes que la base soit générée et se rendre sur https://raspberry.local/collec-master pour accéder à la démo.
+Accepter l'exception de sécurité sur votre certificat bidon. 
 
 > Login: admin
 
 > MDP: password
+
+- ne pas oublier de mettre à jour APPLI_code (soit directement dans l'interface, soit en ligne de commande psql (lire docker_things)
+
 
 --------------------------------------------------------------------------------
 
