@@ -1,7 +1,7 @@
 version: '3'
 services:
   collec-db:
-    image:jancelin/docker-collec:postgisCollec
+    image: jancelin/docker-collec:postgisCollec
     restart: always
     ports:
       - 5432:5432
