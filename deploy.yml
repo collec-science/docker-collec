@@ -7,12 +7,11 @@ services:
       - 5432:5432
     environment:
       - PGDATA=/var/lib/postgresql/9.6/main
+      - ALLOW_IP_RANGE=0.0.0.0/0
     expose:
       - 5432
     volumes:
       - pgdata:/var/lib/postgresql/9.6/main:Z
-    environment:
-      - ALLOW_IP_RANGE=0.0.0.0/0
 
   collec-web:
     image: jancelin/docker-collec:latest
