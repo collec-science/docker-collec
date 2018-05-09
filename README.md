@@ -88,6 +88,50 @@ Accepter l'exception de sécurité sur votre certificat bidon.
 
 --------------------------------------------------------------------------------
 
+VERIFICATION ET RELANCE sur RASPBERRY PI 3 (avant le terrain)
+------------
+
+
+0. Brancher le raspberry sur sa batterie. Se connecter en wifi sur le réseau wifi de votre raspberry (exemple : Pi3_zapvs01)
+Normalement le réseau Wifi se lance automatiquement. Depuis votre PC, vous choisissez de vous connecter exclusivement sur ce réseau.
+Les Wifi des raspberry sont protégés par un mot de passe : oliver07 par exemple
+
+1. Vérifier depuis votre ordinateur de bureau que tout fonctionne sous Chrone
+https://172.24.1.1/collec-master/
+Accepter l'exception de sécurité.
+Si tout va bien, passer au point 7 directement. 
+Sinon allez au point 2.  
+
+2. Lancer Putty et se connecter sur 172.24.1.1
+login : pi
+mot de passe : celui de votre raspberry (oliver_79 par exemple)
+
+3. Se placer dans le repertoire synchronisé avec GIT contenant les instructions de compilation de vos images
+```
+cd GIT/docker_collec
+```
+
+4. Vérifier l'état de vos images : 
+```
+docker ps
+```
+Normalement, collec-db (port 5432) et collec-web (port 80 et 443) fonctionnent
+
+5. Si problème, arrêter et relancer les containers
+```
+docker-compose down --remove-orphans
+docker-compose up -d collec-web
+```
+
+6. Re-Vérifier depuis votre ordinateur de bureau que tout fonctionne sous Chrone
+https://172.24.1.1/collec-master/
+Accepter l'exception de sécurité
+login (par exemple) : terrain
+Si tout va bien, passer au point 7 directement. 
+Si cela ne fonctionne pas, appeler votre informaticien référent.
+
+7. Si tout va bien, mettre le raspberry et sa batterie dans un sac à dos (ou un tupperware) à porter avec vous au terrain. 
+
 COLLEC
 ============
 Collec est un logiciel destiné à gérer les collections d'échantillons prélevés sur le terrain.
