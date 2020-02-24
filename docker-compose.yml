@@ -18,7 +18,7 @@ services:
     #image: 4e148aaae051
     restart: always
     ports:
-      - 5432:5432
+      - 5433:5432
     environment:
       - PGDATA=/var/lib/postgresql/11/main
     expose:
@@ -26,7 +26,8 @@ services:
     volumes:
       #- "/home/pi/collec/postgres_data_collec_auto:/var/lib/postgresql"
       #- "/c/postgresData:/var/lib/postgresql:z"
-      - pgdata:/var/lib/postgresql/11/main:Z
+      - collecpgdata:/var/lib/postgresql/11/main:Z
+      - ~/collecpgbackup:/var/lib/postgresql/backup
     environment:
       - ALLOW_IP_RANGE=0.0.0.0/0
 
@@ -38,7 +39,7 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 631:631
+    #  - 632:631
     environment:
       - TZ=Europe/Paris
 

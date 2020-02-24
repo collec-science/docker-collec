@@ -8,7 +8,9 @@ POSTGRES="/usr/lib/postgresql/11/bin/postgres"
 INITDB="/usr/lib/postgresql/11/bin/initdb"
 SQLDIR="/usr/share/postgresql/11/contrib/postgis-2.5/"
 LOCALONLY="-c listen_addresses='127.0.0.1, ::1'"
-CREATESCRIPT="https://github.com/Irstea/collec/raw/master/install/pgsql/create_db.sql"
+CREATESCRIPT="https://github.com/Irstea/collec/raw/master/install/init_by_psql.sql"
+CREATEGACL="https://github.com/Irstea/collec/raw/master/install/pgsql/gacl_create.sql"
+CREATECOL="https://github.com/Irstea/collec/raw/master/install/pgsql/gacl_create.sql"
 
 #Christine : ajouter postgres au groupe ssl-cert qui a le droit de lire le repertoire des cles privees
 command addgroup --system 'ssl-cert'
@@ -38,8 +40,11 @@ fi
 # create the folder for the backup
 mkdir -p $DATADIR/backup
 
-# get createdb.sql script
-wget --quiet -O - $CREATESCRIPT > /var/lib/postgresql/create_db.sql
+# get create script
+wget --quiet -O - $CREATESCRIPT > /var/lib/postgresql/init_by_psql.sql
+mkdir /var/lib/postgresql/pgsql
+wget --quiet -O - $CREATEGACL > /var/lib/postgresql/pgsql/gacl_create.sql
+wget --quiet -O - $CREATECOL > /var/lib/postgresql/pgsql/col_create.sql
 
 id postgres
 
@@ -73,7 +78,6 @@ if [ -z "$POSTGRES_PASS" ]; then
   POSTGRES_PASS=collecPassword
 fi
 
-
 # Custom IP range via docker run -e (https://docs.docker.com/engine/reference/run/#env-environment-variables)
 # Usage is: docker run [...] -e ALLOW_IP_RANGE='192.168.0.0/16'
 if [ "$ALLOW_IP_RANGE" ]
@@ -93,38 +97,20 @@ su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREA
 #su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF"
 
 #su - postgres -c "$POSTGRES -D $DATADIR -c config_file=$CONF $LOCALONLY" &
-su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS';\""
+# su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS';\""
 trap "echo \"Sending SIGTERM to postgres\"; killall -s SIGTERM postgres" SIGTERM
+su - postgres -c "$POSTGRES -D $DATADIR -c config_file=$CONF $LOCALONLY" &
 
 # wait for postgres to come up
 until `nc -z 127.0.0.1 5432`; do
     echo "$(date) - waiting for postgres localhost-only..."
     sleep 1
 done
+#systemctl start postgresql
 echo "postgres ready"
 
+su - postgres -c "psql -f init_by_psql.sql"
 
-RESULT=`su - postgres -c "psql -l | grep postgis | wc -l"`
-if [[ ${RESULT} == '1' ]]
-then
-    echo 'Postgis Already There'
-else
-    echo "Postgis is missing, installing now"
-    echo "Creating template postgis"
-    su - postgres -c "createdb template_postgis -E UTF8 -T template0"
-    echo "Enabling template_postgis as a template"
-    CMD="UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template_postgis';"
-    su - postgres -c "psql -c \"$CMD\""
-    echo "Loading postgis extension"
-    su - postgres -c "psql template_postgis -c 'CREATE EXTENSION postgis;'"
-
-    #initialisation de la base collec + lancement du script de fabrication de la base
-    su - postgres -c " createdb -O collec -T template_postgis collec "
-    #su - postgres -c " psql collec -c 'CREATE EXTENSION postgis_topology ;'"
-    su - postgres -c " psql collec -f create_db.sql "
-    echo "DB COLLEC & data created "
-
-fi
 # This should show up in docker logs afterwards
 su - postgres -c "psql -l"
 

@@ -32,7 +32,7 @@ ssh pi@raspberry.local
 
 ```
   sudo apt-get update
-  sudo apt-get install curl 
+  sudo apt-get install curl
   curl -fsSL https://get.docker.com/ | sh
   sudo systemctl enable docker
   sudo service docker start

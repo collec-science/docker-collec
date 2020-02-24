@@ -20,7 +20,7 @@ RUN apt-get -y update &&  apt-get install -y \
 
 
 # Update apt source for postgres stuff
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && \
     apt-get -y install wget ca-certificates && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && apt-get -y update
 
 ## Install of netstat, psql and nc for debug
@@ -61,8 +61,8 @@ ADD collec-apache.conf /etc/apache2/sites-available/collec.conf
 
 # Activ site
 ADD php.ini /etc/php/7.3/apache2/php.ini
-ADD filo-apache.conf /etc/apache2/sites-available/filo.config
-ADD default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+ADD collec-apache.conf /etc/apache2/sites-available/collec.config
+# ADD default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 RUN a2ensite 000-default; a2ensite default-ssl; a2ensite collec
 
 # Droits
@@ -91,7 +91,6 @@ ADD param.inc.php.dist $COLLECDIR/collec-science/param/param.inc.php
 WORKDIR $COLLECDIR/collec-science
 RUN chmod -R 755 $COLLECDIR/collec-science &&\
     mkdir -p display/templates_c && \
-    mkdir temp &&\
     chown -R root:www-data . &&\
     chmod -R g+r,g-w . &&\
     chmod -R g+w temp &&\
