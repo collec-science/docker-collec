@@ -4,6 +4,10 @@ MAINTAINER  Julien Ancelin, Christine Plumejeaud, Eric Quinton from Irstea/colle
             https://github.com/Irstea/collec \
             this script is distributed under MIT license
 
+ARG JAVAPATH=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+# On Raspberry, Rasbian, ARM architecture
+# ARG JAVAPATH=/usr/lib/jvm/java-1.11.0-openjdk-armel/
+
 RUN apt-get -y update &&  apt-get install -y \
     software-properties-common \
     dirmngr \
@@ -59,7 +63,7 @@ ADD collec-apache.conf /etc/apache2/sites-available/collec.conf
 ADD php.ini /etc/php/7.3/apache2/php.ini
 ADD filo-apache.conf /etc/apache2/sites-available/filo.config
 ADD default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-RUN a2ensite 000-default; a2ensite default-ssl; a2ensite filo
+RUN a2ensite 000-default; a2ensite default-ssl; a2ensite collec
 
 # Droits
 #RUN command addgroup --system 'ssl-cert'
@@ -70,31 +74,41 @@ RUN a2ensite 000-default
 
 #Variable de dépot et de nom de dossier
 ARG ZIP=master.zip
-ARG REP=collec-master
+ARG COLLECDIR=/var/www/collec-science
 
 # Install Collec
-ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
+RUN mkdir $COLLECDIR
+ADD https://github.com/Irstea/collec/archive/$ZIP $COLLECDIR
+RUN unzip $COLLECDIR/$ZIP -d $COLLECDIR/ && \
+    ln -s $COLLECDIR/collec-master $COLLECDIR/collec-science &&\
+    rm $COLLECDIR/$ZIP
 
-RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
-    rm /var/www/html/$ZIP
 
 # Param de collec
-ADD param.inc.php /var/www/html/$REP/param/param.inc.php
+ADD param.inc.php.dist $COLLECDIR/collec-science/param/param.inc.php
 
 # Droits apache dans collec
-WORKDIR /var/www/html/$REP
-RUN mkdir -p display/templates_c
-RUN chown -R root:www-data . &&\
+WORKDIR $COLLECDIR/collec-science
+RUN chmod -R 755 $COLLECDIR/collec-science &&\
+    mkdir -p display/templates_c && \
+    mkdir temp &&\
+    chown -R root:www-data . &&\
     chmod -R g+r,g-w . &&\
-    chmod -R g+w /var/www/html/$REP/temp &&\
-    chmod -R g+w /var/www/html/$REP/display/templates_c
+    chmod -R g+w temp &&\
+    chmod -R g+w display/templates_c
+
+# generate rsa key for encrypted tokens
+RUN openssl genpkey -algorithm rsa -out $COLLECDIR/collec-science/param/id_collec-science -pkeyopt rsa_keygen_bits:2048 && \
+openssl rsa -in $COLLECDIR/collec-science/param/id_collec-science -pubout -out $COLLECDIR/collec-science/param/id_collec-science.pub &&\
+chown www-data $COLLECDIR/collec-science/param/id_collec-science
 
 # Setup JAVA_HOME, this is useful for docker commandline and FOP in collec
-# Sur Windows ou Linux amd 64
-ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64/
-# Sur Raspberry, Rasbian, architecture ARM
-ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-armel/
+ENV JAVA_HOME $JAVAPATH
 RUN export JAVA_HOME
+
+# adjust imagick policy
+RUN sed -e "s/  <policy domain=\"coder\" rights=\"none\" pattern=\"PDF\" \/>/  <policy domain=\"coder\" rights=\"read|write\" pattern=\"PDF\" \/>/" /etc/ImageMagick-6/policy.xml > /tmp/policy.xml && \
+    cp /tmp/policy.xml /etc/ImageMagick-6/
 
 #Start apache2
 ADD start.sh /start.sh

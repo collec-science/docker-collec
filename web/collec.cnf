@@ -16,6 +16,6 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = www.collec-science.com
 DNS.2 = localhost
-DNS.3 = www.collec-science.local
+DNS.3 = docker-collec
 DNS.4 = collec-science
 
