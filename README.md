@@ -165,4 +165,4 @@ Logiciel diffusé sous licence AGPL
 Copyright
 ---------
 La version 1.0 a été déposée auprès de l'Agence de Protection des Programmes sous le numéro IDDN.FR.001.470013.000.S.C.2016.000.31500
-
+ 
