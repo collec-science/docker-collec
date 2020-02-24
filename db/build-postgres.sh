@@ -2,12 +2,13 @@
 # SCRIPT WRITE BY TIM SUTTON and modify by julien ancelin, Christine Plumejeaud
 #This script will run as the postgres user due to the Dockerfile USER directive
 
-DATADIR="/var/lib/postgresql/9.6/main"
-CONF="/etc/postgresql/9.6/main/postgresql.conf"
-POSTGRES="/usr/lib/postgresql/9.6/bin/postgres"
-INITDB="/usr/lib/postgresql/9.6/bin/initdb"
-SQLDIR="/usr/share/postgresql/9.6/contrib/postgis-2.2/"
+DATADIR="/var/lib/postgresql/11/main"
+CONF="/etc/postgresql/11/main/postgresql.conf"
+POSTGRES="/usr/lib/postgresql/11/bin/postgres"
+INITDB="/usr/lib/postgresql/11/bin/initdb"
+SQLDIR="/usr/share/postgresql/11/contrib/postgis-2.5/"
 LOCALONLY="-c listen_addresses='127.0.0.1, ::1'"
+CREATESCRIPT="https://github.com/Irstea/collec/raw/master/install/pgsql/create_db.sql"
 
 #Christine : ajouter postgres au groupe ssl-cert qui a le droit de lire le repertoire des cles privees
 command addgroup --system 'ssl-cert'
@@ -23,9 +24,9 @@ chown postgres $DATADIR/server.key
 
 
 # Needed under debian, wasnt needed under ubuntu
-if [ ! -d /var/run/postgresql/9.6-main.pg_stat_tmp ]; then
-	mkdir /var/run/postgresql/9.6-main.pg_stat_tmp
-	chmod 0777 /var/run/postgresql/9.6-main.pg_stat_tmp
+if [ ! -d /var/run/postgresql/11-main.pg_stat_tmp ]; then
+	mkdir /var/run/postgresql/11-main.pg_stat_tmp
+	chmod 0777 /var/run/postgresql/11-main.pg_stat_tmp
 fi
 
 # test if DATADIR is existent
@@ -33,6 +34,12 @@ if [ ! -d $DATADIR ]; then
   echo "Creating Postgres data at $DATADIR"
   mkdir -p $DATADIR
 fi
+
+# create the folder for the backup
+mkdir -p $DATADIR/backup
+
+# get createdb.sql script
+wget --quiet -O - $CREATESCRIPT > /var/lib/postgresql/create_db.sql
 
 id postgres
 
@@ -63,21 +70,15 @@ if [ -z "$POSTGRES_USER" ]; then
   POSTGRES_USER=collec
 fi
 if [ -z "$POSTGRES_PASS" ]; then
-  POSTGRES_PASS=collec
+  POSTGRES_PASS=collecPassword
 fi
-# Enable hstore and topology by default
-if [ -z "$HSTORE" ]; then
-  HSTORE=true
-fi
-if [ -z "$TOPOLOGY" ]; then
-  TOPOLOGY=true
-fi
+
 
 # Custom IP range via docker run -e (https://docs.docker.com/engine/reference/run/#env-environment-variables)
 # Usage is: docker run [...] -e ALLOW_IP_RANGE='192.168.0.0/16'
 if [ "$ALLOW_IP_RANGE" ]
 then
-  echo "host    all             all             0.0.0.0/0              md5" >> /etc/postgresql/9.6/main/pg_hba.conf
+  echo "host    all             all             0.0.0.0/0              md5" >> /etc/postgresql/11/main/pg_hba.conf
 fi
 
 # redirect user/pass into a file so we can echo it into
@@ -91,9 +92,9 @@ su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREA
 #su - postgres -c "$POSTGRES --single -d $DATADIR -c config_file=$CONF" <<< \"DO $body$ BEGIN IF NOT EXISTS ( SELECT * FROM pg_catalog.pg_user WHERE usename = '$POSTGRES_USER') THEN CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS'; END IF; END $body$; \""
 #su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF"
 
+#su - postgres -c "$POSTGRES -D $DATADIR -c config_file=$CONF $LOCALONLY" &
+su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS';\""
 trap "echo \"Sending SIGTERM to postgres\"; killall -s SIGTERM postgres" SIGTERM
-
-su - postgres -c "$POSTGRES -D $DATADIR -c config_file=$CONF $LOCALONLY" &
 
 # wait for postgres to come up
 until `nc -z 127.0.0.1 5432`; do
@@ -107,13 +108,6 @@ RESULT=`su - postgres -c "psql -l | grep postgis | wc -l"`
 if [[ ${RESULT} == '1' ]]
 then
     echo 'Postgis Already There'
-
-    if [[ ${HSTORE} == "true" ]]; then
-        echo 'HSTORE is only useful when you create the postgis database.'
-    fi
-    if [[ ${TOPOLOGY} == "true" ]]; then
-        echo 'TOPOLOGY is only useful when you create the postgis database.'
-    fi
 else
     echo "Postgis is missing, installing now"
     echo "Creating template postgis"
@@ -124,22 +118,10 @@ else
     echo "Loading postgis extension"
     su - postgres -c "psql template_postgis -c 'CREATE EXTENSION postgis;'"
 
-    if [[ ${HSTORE} == "true" ]]
-    then
-        echo "Enabling hstore in the template"
-        su - postgres -c "psql template_postgis -c 'CREATE EXTENSION hstore;'"
-    fi
-    #if [[ ${TOPOLOGY} == "true" ]]
-    #then
-    #    echo "Enabling topology in the template"
-    #    su - postgres -c "psql template_postgis -c 'CREATE EXTENSION postgis_topology;'"
-    #fi
-
     #initialisation de la base collec + lancement du script de fabrication de la base
-
     su - postgres -c " createdb -O collec -T template_postgis collec "
     #su - postgres -c " psql collec -c 'CREATE EXTENSION postgis_topology ;'"
-    su - postgres -c " psql collec -f /collec.sql "
+    su - postgres -c " psql collec -f create_db.sql "
     echo "DB COLLEC & data created "
 
 fi

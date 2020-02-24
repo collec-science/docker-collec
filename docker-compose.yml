@@ -10,50 +10,45 @@ services:
       context: ./db
       dockerfile: Dockerfile.postgres
       #labels:
-      #  collec-db: "Postgres 9.6 DB for collec v1.2"
-    command: su - postgres -c "POSTGIS_ENABLE_OUTDB_RASTERS=1 POSTGIS_GDAL_ENABLED_DRIVERS=ENABLE_ALL /usr/lib/postgresql/9.6/bin/postgres -D /var/lib/postgresql/9.6/main -c config_file=/etc/postgresql/9.6/main/postgresql.conf"
+      #  collec-db: "Postgres 11 DB for collec v1.2"
+    command: su - postgres -c "POSTGIS_ENABLE_OUTDB_RASTERS=1 POSTGIS_GDAL_ENABLED_DRIVERS=ENABLE_ALL /usr/lib/postgresql/11/bin/postgres -D /var/lib/postgresql/11/main -c config_file=/etc/postgresql/11/main/postgresql.conf"
     #command: /start-postgis.sh
     #command: service postgresql restart
-    #command: /usr/bin/pg_ctlcluster 9.6 main restart
+    #command: /usr/bin/pg_ctlcluster 11 main restart
     #image: 4e148aaae051
     restart: always
     ports:
       - 5432:5432
     environment:
-      - PGDATA=/var/lib/postgresql/9.6/main
+      - PGDATA=/var/lib/postgresql/11/main
     expose:
       - 5432
     volumes:
       #- "/home/pi/collec/postgres_data_collec_auto:/var/lib/postgresql"
       #- "/c/postgresData:/var/lib/postgresql:z"
-      - pgdata:/var/lib/postgresql/9.6/main:Z
+      - pgdata:/var/lib/postgresql/11/main:Z
     environment:
       - ALLOW_IP_RANGE=0.0.0.0/0
 
   collec-web:
     build:
-      #context: https://github.com/jancelin/docker-collec.git#master:/build
       context: ./web
       dockerfile: Dockerfile.apache
-      args:
-        - ZIP=master.zip
-        - REP=collec-master
-    #image: 4e148aaae051
     restart: always
     ports:
       - 80:80
       - 443:443
-      - 632:631
-    links:
-      - collec-db:collec-db
+      - 631:631
+    environment:
+      - TZ=Europe/Paris
 
 volumes:
-  pgdata:
+  collecpgdata:
     #driver: local
     external: true
 
 # Collec est accessible à cette adresse après 2 minutes (construction de la base de donnée):
-#                   https://mon_ip/collec-master 
+#                   https://collec-docker.locao or https://collec-docker
 # mon_ip = 127.0.0.1, ou 172.24.1.1, et accepter l'erreur sur le certificat (ajouter aux exceptions) 
 
 # Login: admin
