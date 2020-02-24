@@ -1,52 +1,65 @@
-FROM  debian:stretch
-MAINTAINER  Julien Ancelin, Christine Plumejeaud from Irstea/collec \
-            Logiciel diffusé sous licence AGPL \
-            https://github.com/Irstea/collec
+FROM  debian:buster
+MAINTAINER  Julien Ancelin, Christine Plumejeaud, Eric Quinton from Irstea/collec \
+            Collec-Science is published under AGPL license \
+            https://github.com/Irstea/collec \
+            this script is distributed under MIT license
 
+RUN apt-get -y update &&  apt-get install -y \
+    software-properties-common \
+    dirmngr \
+    debian-archive-keyring \
+    net-tools \
+    apt-utils \
+    ssl-cert \
+    vim \
+    unzip
 
-RUN apt-get -y update
-
-RUN apt-get install -y software-properties-common dirmngr
-RUN apt-get install debian-archive-keyring
-RUN add-apt-repository "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main"
 
 # Update apt source for postgres stuff
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-RUN apt-get -y install wget ca-certificates
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-
-RUN apt-get -y update
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+    apt-get -y install wget ca-certificates && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && apt-get -y update
 
 ## Install of netstat, psql and nc for debug
-RUN apt-get -y install net-tools postgresql-client-9.6 netcat
+RUN apt-get -y install postgresql-client-11 netcat
 
-# acl
-RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim
-
-## Install of CUPS (listen on 631) for printers
-RUN apt-get -y install cups
+# php-apache-cups
+RUN apt-get install -y \
+    apache2 \
+    libapache2-mod-php7.3 \
+    php7.3 \
+    php7.3-ldap \
+    php7.3-zip \
+    php-mbstring \
+    php7.3-pgsql \
+    php7.3-xml \
+    php-xdebug \
+    php-curl \
+    php-gd \
+    default-jre \
+    fop \
+    php-imagick \
+    openssl \
+    cups
 
 RUN apt-get clean && apt-get -y autoremove
 
 # add pi as CUPS user (in group lpadmin)
-RUN useradd pi -p raspberry -g lpadmin
+# RUN useradd pi -p raspberry -g lpadmin
 
 RUN a2enmod ssl; a2enmod headers; a2enmod rewrite
+# Generate certificate
+ADD collec.cnf /etc/ssl/collec.cnf
+RUN openssl req -new -x509 -days 3650 -nodes -text -out /etc/ssl/certs/server.crt -keyout /etc/ssl/private/server.key -config /etc/ssl/collec.cnf && chown root:ssl-cert /etc/ssl/private/server.key && chown root:ssl-cert /etc/ssl/certs/server.crt
 
-# Generate or copy  certificate (for CN : local-collec)
-#RUN mkdir /etc/apache2/ssl
-#RUN /usr/sbin/make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/apache2/ssl/apache.pem
-ADD collec_key.pem /etc/ssl/private/
-ADD collec_crt.pem /etc/ssl/certs/
-RUN chown root:ssl-cert /etc/ssl/private/collec_key.pem
-RUN chown root:ssl-cert /etc/ssl/certs/collec_crt.pem
 
 # Copy config site available
-ADD 000-default.conf /etc/apache2/sites-available/000-default.conf
-ADD default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+ADD collec-apache.conf /etc/apache2/sites-available/collec.conf
 
 # Activ site
-RUN a2ensite 000-default.conf; a2ensite default-ssl.conf
+ADD php.ini /etc/php/7.3/apache2/php.ini
+ADD filo-apache.conf /etc/apache2/sites-available/filo.config
+ADD default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+RUN a2ensite 000-default; a2ensite default-ssl; a2ensite filo
 
 # Droits
 #RUN command addgroup --system 'ssl-cert'

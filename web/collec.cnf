@@ -4,18 +4,18 @@ req_extensions = v3_req
 prompt = no
 [req_distinguished_name]
 C = FR
-ST = VA
-L = SomeCity
-O = CNRS
-OU = Zones Ateliers
-CN = local-collec
+ST = .
+L = .
+O = .
+OU = .
+CN = collec-science.local
 [v3_req]
 keyUsage = keyEncipherment, dataEncipherment
 extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = www.company.com
+DNS.1 = www.collec-science.com
 DNS.2 = localhost
-DNS.3 = www.company.net 
-DNS.4 = company.net 
+DNS.3 = www.collec-science.local
+DNS.4 = collec-science
 
