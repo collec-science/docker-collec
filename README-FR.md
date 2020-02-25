@@ -20,7 +20,6 @@
   - [Installation de Docker et de l'application](#Installation-de-Docker-et-de-lapplication)
   - [Modifier les droits pour la sauvegarde de la base de données](#Modifier-les-droits-pour-la-sauvegarde-de-la-base-de-donn%C3%A9es)
   - [Créer un réseau wifi pour connecter directement les terminaux](#Cr%C3%A9er-un-r%C3%A9seau-wifi-pour-connecter-directement-les-terminaux)
-- [Remerciements](#Remerciements)
 - [Licence](#Licence)
 
 # Présentation
