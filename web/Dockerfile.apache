@@ -97,9 +97,9 @@ RUN chmod -R 755 $COLLECDIR/collec-science &&\
     chmod -R g+w display/templates_c
 
 # generate rsa key for encrypted tokens
-RUN openssl genpkey -algorithm rsa -out $COLLECDIR/collec-science/param/id_collec-science -pkeyopt rsa_keygen_bits:2048 && \
-openssl rsa -in $COLLECDIR/collec-science/param/id_collec-science -pubout -out $COLLECDIR/collec-science/param/id_collec-science.pub &&\
-chown www-data $COLLECDIR/collec-science/param/id_collec-science
+RUN openssl genpkey -algorithm rsa -out $COLLECDIR/collec-science/param/id_collec -pkeyopt rsa_keygen_bits:2048 && \
+openssl rsa -in $COLLECDIR/collec-science/param/id_collec -pubout -out $COLLECDIR/collec-science/param/id_collec.pub &&\
+chown www-data $COLLECDIR/collec-science/param/id_collec
 
 # Setup JAVA_HOME, this is useful for docker commandline and FOP in collec
 ENV JAVA_HOME $JAVAPATH

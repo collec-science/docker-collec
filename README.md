@@ -1,168 +1,274 @@
+**DOCKER-COLLEC-SCIENCE**
 
-[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/jancelin/docker-collec/master/docker-compose.yml)
+- [Presentation](#Presentation)
+- [Docker installation](#Docker-installation)
+  - [Debian, Ubuntu or Raspbian](#Debian-Ubuntu-or-Raspbian)
+  - [Windows](#Windows)
+- [Installation of containers](#Installation-of-containers)
+  - [launch the web application](#launch-the-web-application)
+    - [Docker is installed in the computer that is used to access the application](#Docker-is-installed-in-the-computer-that-is-used-to-access-the-application)
+    - [Docker is installed in a Raspberry](#Docker-is-installed-in-a-Raspberry)
+  - [Some useful docker commands](#Some-useful-docker-commands)
+  - [Database backup](#Database-backup)
+  - [Update the application](#Update-the-application)
+    - [Make a backup of the database](#Make-a-backup-of-the-database)
+    - [Update the database](#Update-the-database)
+    - [Update the application](#Update-the-application-1)
+- [Using a Raspberry Pi](#Using-a-Raspberry-Pi)
+  - [Installation of Raspbian](#Installation-of-Raspbian)
+  - [ssh connection](#ssh-connection)
+  - [Install Docker and the software](#Install-Docker-and-the-software)
+  - [Change the rights for the database backup](#Change-the-rights-for-the-database-backup)
+  - [Create a wifi network to connect terminals directly](#Create-a-wifi-network-to-connect-terminals-directly)
+- [Acknowledgements](#Acknowledgements)
+- [License](#License)
 
-COLLEC RPI
-============
+This file is translated from REAMDE-FR.md with www.DeepL.com/Translator
+# Presentation
 
-FROM Irstea/collec pour une utilisation sur le terrain en mode déconnecté 
+The software[Collec-Science](https://github.com/Irstea/collec) is used to manage samples collected in the field. It is possible to create an instance of it to make direct entries.
 
-**https://github.com/Irstea/collec**
+To do this, the software must be able to be embedded on a field computer (Windows or Linux laptop or tablet, or Raspberry Pi). The technology chosen is the one based on Docker containers, to be able to install a Postgresql database and an Apache2 Web server to host the PHP code.
 
+The scripts provided allow you to install two Docker containers, one to host the database and the other for the web server.
 
-INSTALLATION sur RASPBERRY PI 3 from scratch
-------------
+This solution can also be used to run collec-Science on any other OS (CentOS, Windows, etc.), while ensuring that it runs in the Debian environment.
 
-* Télécharger RASPBIAN jessie Lite : https://downloads.raspberrypi.org/raspbian_lite_latest
-
-* Flasher raspbian jessie sur une Micro SD avec ETCHER: https://etcher.io/
-
-* Insérer la micro SD dans le raspberry pi3, connecter un cable ethernet, allumer.
-
-* Activer SSH sur le pi3
-
-* Se connecter en ssh au raspberry
-
-```
-ssh pi@raspberry.local
-```
-
-> MDP: raspberry
-
-* Installer docker engine: https://docs.docker.com/engine/installation/
-
-```
-  sudo apt-get update
-  sudo apt-get install curl
-  curl -fsSL https://get.docker.com/ | sh
-  sudo systemctl enable docker
-  sudo service docker start
-  sudo groupadd docker
-  sudo usermod -aG docker $USER
-```
-
-* Installer docker compose: https://docs.docker.com/compose/install/
+# Docker installation
+## Debian, Ubuntu or Raspbian
 
 ```
-sudo apt-get install python-pip
-sudo pip install docker-compose
+    sudo -s
+    apt-get update
+    apt-get install curl
+    curl -fsSL https://get.docker.com/ | sh
+    apt-get install docker-compose
+    systemctl enable docker
+    service docker start
+    groupadd docker
+    usermod -aG docker $USER
+```
+## Windows
+Follow the instructions described here: [https://docs.docker.com/docker-for-windows/install/](https://docs.docker.com/docker-for-windows/install/).
+
+Also install the Windows *PowerShell* program, which will allow you to open a terminal and launch manual commands.
+
+# Installation of containers
+The commands are given for Linux. Remember to adapt the approach to Windows (manual download from a browser, decompression with Windows, etc.).
+
+Download the code of this deposit in a folder on your computer:
+```
+sudo apt-get install wget unzip
+wget https://github.com/Irstea/collec-docker/archive/master.zip
+unzip master.zip
+cd docker-collec-master
+```
+Create a Docker volume to host the Postgresql database:
+```
+docker volume create --name collecpgdata -d local
+```
+Create the two images and the associated containers:
+```
+docker-compose up --build
+```
+If all goes well, you will find the following images:
+```
+docker images
+REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
+collec-docker_collec-web       latest              834d8fd9f504        18 hours ago        782MB
+collec-docker_collec-db        latest              78d95ff5fea4        19 hours ago        888MB
 ```
 
-* Lire docker-things : 
-
-- il n'est plus nécessaire de créer de répertoire de stockage des données mais il faut créer un volume pour Docker
-- il vaut mieux télécharger le contenu du GIT sur votre device (raspberry ou windows 10 pro)
-- il faut personnaliser votre base de données collec12b.sql avec votre propre export de votre base server collec. 
-- modifier en particulier danq collec12b.sql les paramètre de l'application APPLI_code pour donner un nom unique de BDD à votre base collec (Administration --> paramètres de l'application)
-- il faut veiller aux conflits réseau (si une base postgres tourne déja en 5432 ou un apache en 80/443 sur votre machine hors docker, éditer le fichier Docker-compose.yml)
-- il faut éditer Dockerfile.apache pour la variable JAVA_HOME et vérifier qu'elle pointe sur le bon environnement (ARM ou AMD64)
-
+And the containers:
 ```
-docker volume create --name pgdata -d local
+docker container ls
+CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                                      NAMES
+125eafce92ac        collec-docker_collec-web   "/bin/sh -c /start.sh"   56 seconds ago      Up 54 seconds       0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   collec-docker_collec-web_1
+4f6b43a1261a        collec-docker_collec-db    "su - postgres -c 'P…"   17 hours ago        Up 10 minutes       0.0.0.0:5433->5432/tcp                     collec-docker_collec-db_1
 ```
 
-- compiler votre image UNE fois 
+**Caution: **the web server exposes ports 80 and 443. If you already have a web server running on your computer, you will need to shut down your local web server before starting the containers.
+
+If you have installed the Postgresql client on your computer, the postgresql server will be accessible from port 5433, at localhost :
 ```
-docker-compose up --build -d collec-web
+psql -U collec -h localhost -p 5433
+collec user password: collecPassword
+```
+## launch the web application
+### Docker is installed in the computer that is used to access the application
+This is the case with a Windows or Linux laptop. First, retrieve the IP address of the web server:
+```
+docker exec collec-docker_collec-web_1 ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 1500
+        inet 172.19.0.3 netmask 255.255.0.0.0 broadcast 172.19.255.255.255
+```
+Here, the container has been assigned the IP address *172.19.0.3*.
+
+Add a line in your /etc/hosts (Linux) or c:\Windows\System32\drivers\etc\hosts (Windows) file:
+```
+172.19.0.3 collec-docker collec-docker.local
+```
+In your browser, go to the site: [https://collec-docker.local](https://collec-docker.local). Accept the security exception: you should access the application.
+
+You can connect with the login *admin*, password *password*: this is a default installation. Then remember to delete the admin account or change the password when you are working in production (except for local access only).
+
+### Docker is installed in a Raspberry
+
+Refer to the corresponding documentation in the chapter[Using a Raspberry Pi](#Using-a-Raspberry-Pi).
+
+## Some useful docker commands
+
+The *docker-compose* commands must be executed from the collec-docker-master folder.
+
+* docker images: displays the list of available images
+* docker container ls: displays the list of containers
+* docker stop collec-docker-master_collec-web_1 : stops the container containing the collec-web image
+* docker start collec-docker-master_collec-web_1 &! starts the previously stopped container
+* docker-compose up &!: starts the containers in the background
+* docker-compose up -d: starts the collec-web and collec-db in their respective containers, recreating them
+* docker exec -ti collec-docker-master_collec-web_1 /bin/bash: connects to the container and allows to execute commands
+* docker rmi collec-docker_collec-web --force: suddenly deletes the collec-web image
+* docker-compose up --build: recreates both images. Warning: the database will be recreated!
+* docker update --restart=no collec-docker_collec-web_1 : disables the automatic start of the container
+* docker inspect collec-docker_collec-web_1: displays the current container settings
+* docker system prune -a : deletes all images, to reset docker
+
+## Database backup
+The *collec-db* image includes an automatic database backup, which is triggered every day at 13:00. You will find it in your computer, in the folder *Personal folder/collecpgbackup*. Remember to move it to another location on the network, to avoid losing everything in the event of a computer crash or theft.
+
+## Update the application
+
+The update of the application will be done in two steps:
+* on the one hand, by updating the database, if necessary;
+* on the other hand, by recreating the image *collec-web*.
+
+For download the code, you must connected to Internet: use a Ethernet cable if your software is installed in a Raspberry-Pi.
+
+### Make a backup of the database
+```
+docker exec -ti collec-docker-master_collec-db_1 bash
+su - postgres -c /var/lib/postgresql/backup.sh
+```
+You should find your backup files in the ~/collecpgbackup folder on your computer (~ corresponds to your default folder).
+
+### Update the database
+
+Retrieve the version number of the current database version:
+```
+docker exec -ti collec-docker-master_collec-db_1 bash
+su postgres -c 'psql collec -c "select dbversion_number from col.dbversion order by dbversion_date desc limit 1"'
+```
+Check the Github repository for a database modification script (in[https://github.com/Irstea/collec/tree/master/install/pgsql](https://github.com/Irstea/collec/tree/master/install/pgsql)). The script is in the form:
+```
+alter-1.1-1.2.sql
+```
+where 1.1 is the current version of your database, and 1.2 is the version to be reached.
+
+In your Docker container, download the script:
+```
+su - postgres
+wget https://github.com/Irstea/collec/raw/master/install/pgsql/alter-1.1-1.2.sql
+```
+and execute this script:
+```
+psql -U collec collec -h localhost -f alter-1.2-1.3.sql
+```
+The default password is: collecPassword
+
+If you are a few versions late, you will have to run the scripts successively to get to the current version level.
+
+Quit the container with ctrl-D ctrl-D.
+
+### Update the application
+
+Save the configuration files:
+```
+mkdir param
+docker cp collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/param.inc.php param/
+docker cp collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science param/
+docker cp collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science.pub param/
 ```
 
-- exécuter/relancer un container correspondant à cette image
+Stop the container, and recreate the image:
 ```
-docker-compose up -d collec-web
+docker stop collec-docker-master_collec-web_1
+cd collec-docker-master
+docker-compose up --build collec-web &!
 ```
-
-- ne pas oublier sur votre device de déclarer le mapping entre son IP et votre nom de domaine bidon dans /etc/hosts : local-collec
-(lire docker-things)
-
-- Attendre 2 minutes que la base soit générée et se rendre sur https://raspberry.local/collec-master pour accéder à la démo.
-
-https://IP/collec-master
-
-Accepter l'exception de sécurité sur votre certificat bidon. 
-
-> Login: admin
-
-> MDP: password
-
-- ne pas oublier de mettre à jour APPLI_code (soit directement dans l'interface, soit en ligne de commande psql (lire docker_things)
-
-
---------------------------------------------------------------------------------
-
-VERIFICATION ET RELANCE sur RASPBERRY PI 3 (avant le terrain)
-------------
-
-
-0. Brancher le raspberry sur sa batterie. Se connecter en wifi sur le réseau wifi de votre raspberry (exemple : Pi3_zapvs01)
-Normalement le réseau Wifi se lance automatiquement. Depuis votre PC, vous choisissez de vous connecter exclusivement sur ce réseau.
-Les Wifi des raspberry sont protégés par un mot de passe : oliver07 par exemple
-
-1. Vérifier depuis votre ordinateur de bureau que tout fonctionne sous Chrone
-https://172.24.1.1/collec-master/
-Accepter l'exception de sécurité.
-Si tout va bien, passer au point 7 directement. 
-Sinon allez au point 2.  
-
-2. Lancer Putty et se connecter sur 172.24.1.1
-login : pi
-mot de passe : celui de votre raspberry (oliver_79 par exemple)
-
-3. Se placer dans le repertoire synchronisé avec GIT contenant les instructions de compilation de vos images
+Docker will recreate the image by loading the new version of the application. Once the container is started, reintegrate the previously saved configuration files:
 ```
-cd GIT/docker_collec
+cd ..
+docker cp param/param.inc.php collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
+docker cp param/id_collec collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
+docker cp param/id_collec.pub collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
+docker exec -ti collec-docker-master_collec-web_1 bash
+cd /var/www/collec-science/collec-science/param
+chgrp www-data id_collec-science*
+chmod g+r id_collec-science*
 ```
+Quit the container with Ctrl+D
 
-4. Vérifier l'état de vos images : 
-```
-docker ps
-```
-Normalement, collec-db (port 5432) et collec-web (port 80 et 443) fonctionnent
+*Warning:* if you recreate the container, you will have to restart the copy of the configuration files.
 
-5. Si problème, arrêter et relancer les containers
+# Using a Raspberry Pi
+## Installation of Raspbian
+
+For the installation of Raspbian, refer to the[Raspberry installation documentation](https://www.raspberrypi.org/documentation/).
+
+Remember to enable access via ssh, and disable the graphical user interface at startup, which consumes resources and is irrelevant in the context of collec-Science.
+
+## ssh connection
+To connect to your Raspberry, use the command :
 ```
-docker-compose down --remove-orphans
-docker-compose up -d collec-web
+ssh pi@adresse_ip
+```
+Once connected, type the command:
+```
+sudo -s
+```
+If you have to work with the *root* login.
+
+## Install Docker and the software
+
+Review the detailed instructions at the beginning of the document.
+
+## Change the rights for the database backup
+
+By being connected with the *pi* account:
+```
+cd /home/pi
+sudo chown pi:pi collecpgbackup
+chmod 777 collecpgbackup
 ```
 
-6. Re-Vérifier depuis votre ordinateur de bureau que tout fonctionne sous Chrone
-https://172.24.1.1/collec-master/
-Accepter l'exception de sécurité
-login (par exemple) : terrain
-Si tout va bien, passer au point 7 directement. 
-Si cela ne fonctionne pas, appeler votre informaticien référent.
+## Create a wifi network to connect terminals directly
 
-7. Si tout va bien, mettre le raspberry et sa batterie dans un sac à dos (ou un tupperware) à porter avec vous au terrain. 
+Follow the instructions defined in the first chapter of this document: [https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md](https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md) (*Setting up a Raspberry Pi as an access point in a standalone network (NAT)*).
 
-COLLEC
-============
-Collec est un logiciel destiné à gérer les collections d'échantillons prélevés sur le terrain.
+Adapt the content of the file */etc/hostapd/hostapd.conf*, and in particular :
+* ssid=collec-docker
+* wpa_passphrase=your_password
 
-Écrit en PHP, il fonctionne avec une base de données Postgresql. Il est bâti autour de la notion d'objets, qui sont identifiés par un numéro unique. Un objet peut être de deux types : soit un container (aussi bien un site, un bâtiment, une pièce, un congélateur, une caisse...) qu'un échantillon. 
-Un type d'échantillon peut être rattaché à un type de container, quand les deux notions se superposent (le flacon contenant le résultat d'une pêche est à la fois un container et l'échantillon lui-même).
-Un objet peut se voir attacher plusieurs identifiants métiers différents, des événements, ou des réservations.
-Un échantillon peut être subdivisé en d'autres échantillons (du même type ou non). Il peut contenir plusieurs éléments identiques (notion de sous-échantillonnage), comme des écailles de poisson indifférenciées.
-Un échantillon est obligatoirement rattaché à un projet. Les droits de modification sont attribués au niveau du projet.
+Then edit the file */etc/dnsmasq.conf*, and add these lines:
+```
+server=8.8.8.8
+address=/collec-docker.local/192.168.4.1
+```
+The *server* line corresponds to Google's web address server (DNS). If you want to use another DNS, for example your organization's, change this line.
 
-Fonctionnalités principales
----------------------------
-- Entrée/sortie du stock de tout objet (un container peut être placé dans un autre container, comme une boite dans une armoire, une armoire dans une pièce, etc)
-- possibilité de générer des étiquettes avec ou sans QRCODE
-- gestion d'événements pour tout objet
-- réservation de tout objet
-- lecture par scanner (douchette) des QRCODE, soit objet par objet, soit en mode batch (lecture multiple, puis intégration des mouvements en une seule opération)
-- lecture individuelle des QRCODES par tablette ou smartphone (testé, mais pas très pratique pour des raisons de performance)
-- ajout de photos ou de pièces jointes à tout objet
+Restart the Raspberry, and connect to the wifi network *collec-docker*. Test the communication with the application, by entering the following address in a browser: https://collec-docker.local. You must access the home page. In case of access problems (address not recognized), you can also connect directly to the IP address: https://192.168.4.1.
 
-Sécurité
---------
-- logiciel homologué à Irstea, résistance à des attaques opportunistes selon la nomenclature de l'OWASP (projet ASVS), mais probablement capable de répondre aux besoins du niveau standard
-- identification possible selon plusieurs modalités : base de comptes interne, annuaire ldap, ldap - base de données (identification mixte), via serveur CAS, ou par délégation à un serveur proxy d'identification, comme LemonLDAP, par exemple
-- gestion des droits pouvant s'appuyer sur les groupes d'un annuaire LDAP
+<!--- This configuration allows you to load the Openstreetmap tiles before leaving for the field:
+* at the office, connect the Raspberry to the local network with an Ethernet cable
+* connect your tablet to the Raspberry via wifi
+* Launch the application at https://192.168.4.1.
+* Open the module *Parameters>Map Caching*, and download the tiles you will need in the field
+* stop the Raspberry, disconnect the Ethernet cable, close the browser from your tablet
+* Restart the Raspberry, reconnect the tablet to the wifi, and reopen the application: the tiles are accessible without you being connected to the Internet.
+-->
 
-Licence
--------
-Logiciel diffusé sous licence AGPL
+# Acknowledgements
 
-Copyright
----------
-La version 1.0 a été déposée auprès de l'Agence de Protection des Programmes sous le numéro IDDN.FR.001.470013.000.S.C.2016.000.31500
- 
+# License
+
+The scripts are released under MIT license.

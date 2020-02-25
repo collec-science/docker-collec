@@ -19,8 +19,8 @@ SETVARS="POSTGIS_ENABLE_OUTDB_RASTERS=1 POSTGIS_GDAL_ENABLED_DRIVERS=ENABLE_ALL"
 chown -R postgres:postgres /var/lib/postgresql
 ls -l /var/lib/postgresql
 
-#ls -al /etc/postgresql/11/main/postgresql.conf
-ls -al /var/lib/postgresql/11/main/postgresql.conf
+ls -al /etc/postgresql/11/main/postgresql.conf
+#ls -al /var/lib/postgresql/11/main/postgresql.conf
 
 echo "Postgres will be started"
 
@@ -48,9 +48,9 @@ su - postgres -c "/usr/lib/postgresql/11/bin/pg_ctl start -D /var/lib/postgresql
 
 
 # wait for postgres to come up on port 5432
-#until `nc -z 127.0.0.1 5432`; do
-#    echo "$(date) - waiting for postgres."
-#    sleep 1
-#done
+until `nc -z 127.0.0.1 5432`; do
+    echo "$(date) - waiting for postgres."
+    sleep 1
+done
 echo "postgres ready"
 

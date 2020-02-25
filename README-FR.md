@@ -58,9 +58,9 @@ Les commandes sont données pour Linux. Pensez à adapter la démarche à Window
 Téléchargez le code de ce dépôt dans un dossier de votre ordinateur :
 ```
 sudo apt-get install wget unzip
-wget https://github.com/Irstea/collec-docker/archive/master.zip
+wget https://github.com/jancelin/docker-collec/archive/master.zip
 unzip master.zip
-cd collec-docker-master
+cd docker-collec-master
 ```
 Créez un volume Docker pour héberger la base de données Postgresql :
 ```
@@ -128,6 +128,7 @@ Les commandes *docker-compose* doivent être exécutées depuis le dossier colle
 * docker container ls : affiche la liste des containers
 * docker stop collec-docker-master_collec-web_1 : arrête le container contenant l'image collec-web
 * docker start collec-docker-master_collec-web_1 &! : démarre le container précédemment arrêté
+* docker-compose up &! : démarre les containers en tâche de fond
 * docker-compose up -d : démarre les collec-web et collec-db dans leurs containers respectifs, en les recréant
 * docker exec -ti collec-docker_collec-web_1 /bin/bash : se connecte au container et permet d'exécuter des commandes
 * docker rmi collec-docker_collec-web --force : supprime brutalement l'image collec-web
@@ -161,7 +162,7 @@ Récupérez le numéro de la version de la base de données actuelle :
 docker exec -ti collec-docker-master_collec-db_1 bash
 su postgres -c 'psql collec -c "select dbversion_number from col.dbversion order by dbversion_date desc limit 1"'
 ```
-Recherchez dans le dépôt Github s'il existe un script de modification de la base de données (dans [https://github.com/Irstea/collec/tree/master/install/pgsql](https://github.com/Irstea/collec-science/tree/master/install/pgsql)). Le script est sous la forme :
+Recherchez dans le dépôt Github s'il existe un script de modification de la base de données (dans [https://github.com/Irstea/collec/tree/master/install/pgsql](https://github.com/Irstea/collec/tree/master/install/pgsql)). Le script est sous la forme :
 ```
 alter-1.1-1.2.sql
 ```
@@ -170,7 +171,7 @@ où 1.1 correspond à la version courante de votre base de données, et 1.2 à l
 Dans votre container Docker, téléchargez le script :
 ```
 su - postgres
-wget https://github.com/Irstea/collec-science/raw/master/install/pgsql/alter-1.1-1.2.sql
+wget https://github.com/Irstea/collec/raw/master/install/pgsql/alter-1.1-1.2.sql
 ```
 et exécutez ce script :
 ```
@@ -202,8 +203,8 @@ Docker va recréer l'image en chargeant la nouvelle version de l'application. Un
 ```
 cd ..
 docker cp param/param.inc.php collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
-docker cp param/id_collec-science collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
-docker cp param/id_collec-science.pub collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
+docker cp param/id_collec collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
+docker cp param/id_collec.pub collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
 ```
 *Attention :* si vous recréez le container, vous devrez relancer la copie des fichiers de paramétrage.
 

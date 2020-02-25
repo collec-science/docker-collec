@@ -2,15 +2,15 @@
 # SCRIPT WRITE BY TIM SUTTON and modify by julien ancelin, Christine Plumejeaud
 #This script will run as the postgres user due to the Dockerfile USER directive
 
-DATADIR="/var/lib/postgresql/11/main"
+HOMEDIR="/var/lib/postgresql"
+DATADIR=$HOMEDIR"/11/main"
 CONF="/etc/postgresql/11/main/postgresql.conf"
 POSTGRES="/usr/lib/postgresql/11/bin/postgres"
 INITDB="/usr/lib/postgresql/11/bin/initdb"
 SQLDIR="/usr/share/postgresql/11/contrib/postgis-2.5/"
 LOCALONLY="-c listen_addresses='127.0.0.1, ::1'"
-CREATESCRIPT="https://github.com/Irstea/collec/raw/master/install/init_by_psql.sql"
-CREATEGACL="https://github.com/Irstea/collec/raw/master/install/pgsql/gacl_create.sql"
-CREATECOL="https://github.com/Irstea/collec/raw/master/install/pgsql/gacl_create.sql"
+CREATESCRIPT="https://github.com/Irstea/collec/raw/master/install/init_global_by_psql.sql"
+POPULATE="https://github.com/Irstea/collec/raw/master/install/pgsql/create.sql"
 
 #Christine : ajouter postgres au groupe ssl-cert qui a le droit de lire le repertoire des cles privees
 command addgroup --system 'ssl-cert'
@@ -38,18 +38,17 @@ if [ ! -d $DATADIR ]; then
 fi
 
 # create the folder for the backup
-mkdir -p $DATADIR/backup
+mkdir -p $HOMEDIR/backup
 
 # get create script
-wget --quiet -O - $CREATESCRIPT > /var/lib/postgresql/init_by_psql.sql
+wget --quiet -O - $CREATESCRIPT > /var/lib/postgresql/init_global_by_psql.sql
 mkdir /var/lib/postgresql/pgsql
-wget --quiet -O - $CREATEGACL > /var/lib/postgresql/pgsql/gacl_create.sql
-wget --quiet -O - $CREATECOL > /var/lib/postgresql/pgsql/col_create.sql
+wget --quiet -O - $POPULATE > /var/lib/postgresql/pgsql/create.sql
 
 id postgres
 
 # needs to be done as root:
-chown -R postgres:postgres $DATADIR
+chown -R postgres:postgres $DATAHOME
 
 # Note that $POSTGRES_USER and $POSTGRES_PASS below are optional paramters that can be passed
 # via docker run e.g.
@@ -91,7 +90,7 @@ fi
 echo "postgresql user: $POSTGRES_USER" > /tmp/PGPASSWORD.txt
 echo "postgresql password: $POSTGRES_PASS" >> /tmp/PGPASSWORD.txt
 #COMMENTED by CHRISTINE
-su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS';\""
+su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF <<< \"CREATE USER $POSTGRES_USER WITH SUPERUSER LOGIN PASSWORD '$POSTGRES_PASS';\""
 
 #su - postgres -c "$POSTGRES --single -d $DATADIR -c config_file=$CONF" <<< \"DO $body$ BEGIN IF NOT EXISTS ( SELECT * FROM pg_catalog.pg_user WHERE usename = '$POSTGRES_USER') THEN CREATE USER $POSTGRES_USER WITH SUPERUSER ENCRYPTED PASSWORD '$POSTGRES_PASS'; END IF; END $body$; \""
 #su - postgres -c "$POSTGRES --single -D $DATADIR -c config_file=$CONF"
@@ -109,7 +108,7 @@ done
 #systemctl start postgresql
 echo "postgres ready"
 
-su - postgres -c "psql -f init_by_psql.sql"
+su - postgres -c "psql -f /var/lib/postgresql/init_global_by_psql.sql"
 
 # This should show up in docker logs afterwards
 su - postgres -c "psql -l"
