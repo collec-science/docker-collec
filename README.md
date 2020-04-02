@@ -23,7 +23,6 @@
 - [Acknowledgements](#Acknowledgements)
 - [License](#License)
 
-This file is translated from REAMDE-FR.md with www.DeepL.com/Translator
 # Presentation
 
 The software[Collec-Science](https://github.com/Irstea/collec) is used to manage samples collected in the field. It is possible to create an instance of it to make direct entries.
@@ -118,15 +117,15 @@ Refer to the corresponding documentation in the chapter[Using a Raspberry Pi](#U
 
 ## Some useful docker commands
 
-The *docker-compose* commands must be executed from the collec-docker-master folder.
+The *docker-compose* commands must be executed from the collec-docker folder.
 
 * docker images: displays the list of available images
 * docker container ls: displays the list of containers
-* docker stop collec-docker-master_collec-web_1 : stops the container containing the collec-web image
-* docker start collec-docker-master_collec-web_1 &! starts the previously stopped container
+* docker stop collec-docker_collec-web_1 : stops the container containing the collec-web image
+* docker start collec-docker_collec-web_1 &! starts the previously stopped container
 * docker-compose up &!: starts the containers in the background
 * docker-compose up -d: starts the collec-web and collec-db in their respective containers, recreating them
-* docker exec -ti collec-docker-master_collec-web_1 /bin/bash: connects to the container and allows to execute commands
+* docker exec -ti collec-docker_collec-web_1 /bin/bash: connects to the container and allows to execute commands
 * docker rmi collec-docker_collec-web --force: suddenly deletes the collec-web image
 * docker-compose up --build: recreates both images. Warning: the database will be recreated!
 * docker update --restart=no collec-docker_collec-web_1 : disables the automatic start of the container
@@ -146,21 +145,27 @@ For download the code, you must connected to Internet: use a Ethernet cable if y
 
 ### Make a backup of the database
 ```
-docker exec -ti collec-docker-master_collec-db_1 bash
+docker exec -ti collec-docker_collec-db_1 bash
 su - postgres -c /var/lib/postgresql/backup.sh
 ```
 You should find your backup files in the ~/collecpgbackup folder on your computer (~ corresponds to your default folder).
 
 ### Update the database
 
+Verify the name of yours containers:
+~~~
+docker container ls
+~~~
+
 Retrieve the version number of the current database version:
 ```
-docker exec -ti collec-docker-master_collec-db_1 bash
+docker exec -ti collec-docker_collec-db_1 bash
 su postgres -c 'psql collec -c "select dbversion_number from col.dbversion order by dbversion_date desc limit 1"'
 ```
 Check the Github repository for a database modification script (in[https://github.com/Irstea/collec/tree/master/install/pgsql](https://github.com/Irstea/collec/tree/master/install/pgsql)). The script is in the form:
 ```
 alter-1.1-1.2.sql
+(or col_alter_2.3-2.4.sql for the last version)
 ```
 where 1.1 is the current version of your database, and 1.2 is the version to be reached.
 
@@ -169,11 +174,33 @@ In your Docker container, download the script:
 su - postgres
 wget https://github.com/Irstea/collec/raw/master/install/pgsql/alter-1.1-1.2.sql
 ```
-and execute this script:
-```
-psql -U collec collec -h localhost -f alter-1.2-1.3.sql
-```
+Warning: to upgrade to 2.4 version, you must execute before these commands:
+~~~
+psql collec
+CREATE EXTENSION postgis WITH SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS btree_gin WITH SCHEMA pg_catalog;
+CREATE EXTENSION pgcrypto WITH SCHEMA public;
+~~~
 The default password is: collecPassword
+
+Verify if you have these tables:
+~~~
+select count(*) from gacl.passwordloss;
+select count(*) from col.sampling_place;
+~~~
+If one of these is missing, you must generate it with:
+~~~
+wget https://github.com/Irstea/collec/raw/master/install/pgsql/passwordloss_missing_v2.3.1.sql
+wget https://github.com/Irstea/collec/raw/master/install/pgsql/sampling_place_missing_v2.3.1.sql
+psql -U collec collec -h localhost -f passwordloss_missing_v2.3.1.sql
+psql -U collec collec -h localhost -f sampling_place_missing_v2.3.1.sql
+~~~
+
+After these controls, you can execute tue update script:
+```
+psql -U collec collec -h localhost -f col_alter_2.3-2.4.sql
+```
+(for the last version).
 
 If you are a few versions late, you will have to run the scripts successively to get to the current version level.
 
@@ -184,24 +211,22 @@ Quit the container with ctrl-D ctrl-D.
 Save the configuration files:
 ```
 mkdir param
-docker cp collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/param.inc.php param/
-docker cp collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science param/
-docker cp collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science.pub param/
+docker cp collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/param.inc.php param/
+docker cp collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science param/
+docker cp collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science.pub param/
 ```
 
 Stop the container, and recreate the image:
 ```
-docker stop collec-docker-master_collec-web_1
-cd collec-docker-master
+docker stop collec-docker_collec-web_1
 docker-compose up --build collec-web &!
 ```
 Docker will recreate the image by loading the new version of the application. Once the container is started, reintegrate the previously saved configuration files:
 ```
-cd ..
-docker cp param/param.inc.php collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
-docker cp param/id_collec collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
-docker cp param/id_collec.pub collec-docker-master_collec-web_1:/var/www/collec-science/collec-science/param/
-docker exec -ti collec-docker-master_collec-web_1 bash
+docker cp param/param.inc.php collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/
+docker cp param/id_collec collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/
+docker cp param/id_collec.pub collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/
+docker exec -ti collec-docker_collec-web_1 bash
 cd /var/www/collec-science/collec-science/param
 chgrp www-data id_collec-science*
 chmod g+r id_collec-science*
