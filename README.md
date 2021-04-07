@@ -58,7 +58,7 @@ The commands are given for Linux. Remember to adapt the approach to Windows (man
 Download the code of this deposit in a folder on your computer:
 ```
 sudo apt-get install wget unzip
-wget https://github.com/Irstea/collec-docker/archive/master.zip
+wget https://github.com/jancelin/docker-collec/archive/refs/heads/master.zip
 unzip master.zip
 cd docker-collec-master
 ```
