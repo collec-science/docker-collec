@@ -78,7 +78,7 @@ ARG COLLECDIR=/var/www/collec-science
 
 # Install Collec
 RUN mkdir $COLLECDIR
-ADD https://github.com/Irstea/collec/archive/$ZIP $COLLECDIR
+ADD https://github.com/Irstea/collec/archive/refs/heads/$ZIP $COLLECDIR
 RUN unzip $COLLECDIR/$ZIP -d $COLLECDIR/ && \
     ln -s $COLLECDIR/collec-master $COLLECDIR/collec-science &&\
     rm $COLLECDIR/$ZIP
