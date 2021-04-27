@@ -41,9 +41,9 @@ fi
 mkdir -p $HOMEDIR/backup
 
 # get create script
-wget --quiet -O - $CREATESCRIPT > /var/lib/postgresql/init_global_by_psql.sql
+wget --quiet -O - $CREATESCRIPT > /var/lib/postgresql/init_by_psql.sql
 mkdir /var/lib/postgresql/pgsql
-wget --quiet -O - $POPULATE > /var/lib/postgresql/pgsql/create.sql
+wget --quiet -O - $POPULATE > /var/lib/postgresql/pgsql/collec_create.sql
 
 id postgres
 
@@ -108,7 +108,7 @@ done
 #systemctl start postgresql
 echo "postgres ready"
 
-su - postgres -c "psql -f /var/lib/postgresql/init_global_by_psql.sql"
+su - postgres -c "psql -f /var/lib/postgresql/init_by_psql.sql"
 
 # This should show up in docker logs afterwards
 su - postgres -c "psql -l"
