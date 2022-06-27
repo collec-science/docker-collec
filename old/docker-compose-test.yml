@@ -1,7 +1,7 @@
 version: '3'
 services:
   collec-db:
-    image: jancelin/docker-collec:postgisCollec
+    image: collec-science/docker-collec:postgisCollec
     restart: always
     ports:
       - 5432:5432
@@ -14,7 +14,7 @@ services:
       - pgdata:/var/lib/postgresql/9.6/main
 
   collec-web:
-    image: jancelin/docker-collec:latest
+    image: collec-science/docker-collec:latest
     restart: always
     ports:
       - 80:80
@@ -26,8 +26,8 @@ volumes:
   pgdata:
 
 # Collec est accessible à cette adresse après 2 minutes (construction de la base de donnée):
-#                   https://mon_ip/collec-master 
-# mon_ip = 127.0.0.1, ou 172.24.1.1, et accepter l'erreur sur le certificat (ajouter aux exceptions) 
+#                   https://mon_ip/collec-master
+# mon_ip = 127.0.0.1, ou 172.24.1.1, et accepter l'erreur sur le certificat (ajouter aux exceptions)
 
 # Login: admin
 # Password: password

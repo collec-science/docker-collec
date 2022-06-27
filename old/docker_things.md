@@ -3,14 +3,14 @@
 # Christine Plumejeaud, 04 fevrier 2018 / mise à jour le 12/02/2018
 ------------------------------------------------------------------------------
 
-Lire le readme https://github.com/jancelin/docker-collec
+Lire le readme https://github.com/collec-science/docker-collec
 - Il explique comment installer Docker et Docker-compose
 - On utilise Docker-compose.yml ainsi que les builds d'Apache (./web) et Postgres (./bd)
 - En particulier, la dépendance à kartoza/postgis:9.5-2.2 a été supprimée
 - L'application collec-web utilise collec-db, en postgres 9.6 et postgis 2.3
 
 -----------------------------------------------------
-# Préalable 
+# Préalable
 -----------------------------------------------------
 
 ## Créer un répertoire d'accueil pour les données de la BDD
@@ -51,16 +51,16 @@ cd docker-collec
 
 
 ### Pour changer la version cible de collec, éditer /web/Dockerfile.apache pour remplacer ZIP et REP par les valeurs cibles
-REP définit l'adresse Web qui sera servie par le pi. 
+REP définit l'adresse Web qui sera servie par le pi.
 
-Par exemple : https://raspberry.local/collec-master 
+Par exemple : https://raspberry.local/collec-master
 Si
 ```
 ENV ZIP master.zip
 ENV REP collec-master
 ```
 
-Par exemple : https://raspberry.local/collec-feature_metadata 
+Par exemple : https://raspberry.local/collec-feature_metadata
 Si
 ```
 ENV ZIP feature_metadata.zip
@@ -77,7 +77,7 @@ ENV REP collec-develop
 ### Pour java, le home du jre diffère suivant qu'on compile sous Intel (server Linux ou tablette Windows) ou une puce ARM (Raspberry)
 Modifier /web/Dockerfile.apache et commenter la bonne ligne
 
-* Sur Windows ou Linux amd 64 
+* Sur Windows ou Linux amd 64
 ```
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64/
 ```
@@ -88,7 +88,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-armel/
 ```
 
 -----------------------------------------------------
-# Compiler l'image collec-web 
+# Compiler l'image collec-web
 -----------------------------------------------------
 
 Elle dépend de collec-db (image à faire aussi).
@@ -99,11 +99,11 @@ docker system prune -a
 ```
 
 ## Forcer la recompilation (attention, risque d'écraser la base de données : avoir exporter les données avant)
-- sur Ubuntu xenial : on compile avec Dockerfile  
+- sur Ubuntu xenial : on compile avec Dockerfile
 - sur Windows : on compile avec Dockerfile.postgres et Dockerfile.apache
- 
+
 ```
-docker-compose up --build 
+docker-compose up --build
 ```
 
 ou pour n'en faire qu'un partie (la BDD par exemple). On a 2 cibles : collec-db et collec-web
@@ -152,7 +152,7 @@ ff02::2         ip6-allrouters
 127.0.1.1       raspberrypi
 ```
 
-Accepter le certificat non valide de collec comme une exception. 
+Accepter le certificat non valide de collec comme une exception.
 
 ## Vérifier l'état des containers (on build une image, qui peut s'exécuter dans plein de containers)
 
@@ -167,7 +167,7 @@ e189b9491c97        dockerwindows_collec-db    "su - postgres -c ..."   2 hours 
 Normalement, on peut connecter pgadmin sur le port 5433 ou 5432 du localhost (127.0.0.1) et voir la BDD de collec
 
 -----------------------------------------------------
-# Mettre à jour le parametre APPLI_code 
+# Mettre à jour le parametre APPLI_code
 -----------------------------------------------------
 
 ## Option 1: Dans le container
@@ -175,7 +175,7 @@ Normalement, on peut connecter pgadmin sur le port 5433 ou 5432 du localhost (12
 psql -U collec -d collec -h collec-db -p 5432 -c "UPDATE  col.dbparam SET dbparam_value='DB_TERRAIN_XX' where dbparam_name='APPLI_code';"
 ```
 
-## Option 2: à l'extérieur du container 
+## Option 2: à l'extérieur du container
 
 port 5433 ou 5432 en fonction de la configuration du service collec-db dans docker-compose.yml)
 
@@ -367,7 +367,7 @@ req_extensions = v3_req
 prompt = no
 [req_distinguished_name]
 C = FR
-ST = 
+ST =
 L = SomeCity
 O = CNRS
 OU = Zones Ateliers
@@ -410,4 +410,3 @@ a2ensite default-ssl.conf
 ```
 service apache2 reload
 ```
-

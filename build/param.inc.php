@@ -2,7 +2,7 @@
 /** Fichier cree le 4 mai 07 par quinton
  * Renommez le fichier en param.inc.php
  * ajustez les parametres a votre implementation
- * conservez une sauvegarde de ces parametres pour ne pas les perdre 
+ * conservez une sauvegarde de ces parametres pour ne pas les perdre
  * lors de la mise en place d'une nouvelle version
  * tous les parametres presents dans param.default.inc.php peuvent etre utilises
  */
@@ -60,7 +60,7 @@ $GACL_schema = "gacl";
 /*
  * Lien vers le site d'assistance
  */
-//$APPLI_assist_address = "https://github.com/Irstea/collec/issues/new";
+//$APPLI_assist_address = "https://github.com/collec-science/collec-science/issues/new";
 /*
  * Adresse d'acces a l'application (figure dans les mails envoyes)
  */
@@ -127,7 +127,7 @@ $paramIniFile = "./param.ini";
 //$chemin = substr($_SERVER["DOCUMENT_ROOT"],0, strpos($_SERVER["DOCUMENT_ROOT"],"/bin"));
 //$paramIniFile = "$chemin/param.ini";
 /*
- * Si l'application n'est pas configuree avec un DNS unique 
+ * Si l'application n'est pas configuree avec un DNS unique
  * (chemin de type : https://serveur/collec-science/)
  */
 $SMARTY_variables["display"] = "display";

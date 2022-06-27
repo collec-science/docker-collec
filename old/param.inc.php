@@ -60,7 +60,7 @@ $GACL_schema = "gacl";
 /*
  * Lien vers le site d'assistance
  */
-//$APPLI_assist_address = "https://github.com/Irstea/collec/issues/new";
+//$APPLI_assist_address = "https://github.com/collec-science/collec-science/issues/new";
 /*
  * Adresse d'acces a l'application (figure dans les mails envoyes)
  */

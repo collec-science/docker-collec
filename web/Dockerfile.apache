@@ -1,7 +1,7 @@
 FROM  debian:buster
-MAINTAINER  Julien Ancelin, Christine Plumejeaud, Eric Quinton from Irstea/collec \
+MAINTAINER  Julien Ancelin, Christine Plumejeaud, Eric Quinton from collec-science/collec-science \
             Collec-Science is published under AGPL license \
-            https://github.com/Irstea/collec \
+            https://github.com/collec-science/collec-science \
             this script is distributed under MIT license
 
 ARG JAVAPATH=/usr/lib/jvm/java-1.11.0-openjdk-amd64
@@ -78,7 +78,7 @@ ARG COLLECDIR=/var/www/collec-science
 
 # Install Collec
 RUN mkdir $COLLECDIR
-ADD https://github.com/Irstea/collec/archive/$ZIP $COLLECDIR
+ADD https://github.com/collec-science/collec-science/archive/$ZIP $COLLECDIR
 RUN unzip $COLLECDIR/$ZIP -d $COLLECDIR/ && \
     ln -s $COLLECDIR/collec-master $COLLECDIR/collec-science &&\
     rm $COLLECDIR/$ZIP
@@ -114,4 +114,3 @@ ADD start.sh /start.sh
 RUN chmod 0755 /start.sh
 # CMD is not run at build time. Only when the container is started (docker-compose up <SERVICE> or docker run <IMAGEID>)
 CMD /start.sh
-

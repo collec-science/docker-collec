@@ -1,15 +1,15 @@
 FROM  debian:stretch
-MAINTAINER  Julien Ancelin from Irstea/collec \
+MAINTAINER  Julien Ancelin from collec-science/collec-science \
             Logiciel diffusé sous licence AGPL \
-            https://github.com/Irstea/collec
+            https://github.com/collec-science/collec-science
 #RUN gpg --keyserver keyserver.ubuntu.com --recv 010908312D230C5F
 #RUN gpg --export --armor 010908312D230C5F | apt-key add -
 RUN apt-get install -y software-properties-common dirmngr
 RUN add-apt-repository "deb http://ppa.launchpad.net/webupd8team/java/ubuntu yakkety main"
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C2518248EEA14886
-RUN apt-get -y update 
-#RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim acl
-RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl  oracle-java8-installer php-gd fop php-imagick unzip ssl-cert vim 
+RUN apt-get -y update
+#RUN apt-get install -y apache2 php7.4 php-mbstring php7.4-pgsql php7.4-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim acl
+RUN apt-get install -y apache2 php7.4 php-mbstring php7.4-pgsql php7.4-xml php-xdebug php-curl  oracle-java8-installer php-gd fop php-imagick unzip ssl-cert vim
 
 ## Install of CUPS (listen on 631) for printers
 RUN apt-get -t sid install cups
@@ -44,7 +44,7 @@ ARG ZIP=master.zip
 ARG REP=collec-master
 
 # Install Collec
-ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
+ADD https://github.com/collec-science/collec-science/archive/$ZIP /var/www/html
 
 RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     rm /var/www/html/$ZIP
@@ -54,11 +54,11 @@ ADD param.inc.php /var/www/html/$REP/param/param.inc.php
 
 # Droits
 WORKDIR /var/www/html/$REP
-RUN mkdir -p display/templates_c 
+RUN mkdir -p display/templates_c
 RUN chown -R root:www-data . &&\
     chmod -R g+r,g-w . &&\
     chmod -R g+w /var/www/html/$REP/temp &&\
-    chmod -R g+w /var/www/html/$REP/display/templates_c 
+    chmod -R g+w /var/www/html/$REP/display/templates_c
 
 #Start apache2
 ADD start.sh /start.sh

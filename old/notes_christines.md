@@ -1,15 +1,15 @@
 # Installer un package sur un PI3 (os rasbian) - Petit addenum des emmerdes possibles
 
-Illustration avec l'installation de PostgresSQL >= 9.5 et postgis pour collec (https://github.com/Irstea/collec).
+Illustration avec l'installation de PostgresSQL >= 9.5 et postgis pour collec (https://github.com/collec-science/collec-science).
 
 ## Vous cherchez un paquet qui n'existe pas dans votre distribution
 
-D'abord, comprendre debian et l'organisation des distributions : 
+D'abord, comprendre debian et l'organisation des distributions :
 https://wiki.debian.org/fr/DebianReleases
     - main
     - testing
     - sid
-Les distributions dans l'ordre de publications (juillet 2017): 
+Les distributions dans l'ordre de publications (juillet 2017):
     - wheezy (7)
     - jessie (8)
     - stretch (9)
@@ -61,9 +61,9 @@ Suivre la procédure décrite sur https://www.raspberrypi.org/forums/viewtopic.p
 * 3) apt-get update
 * 4) apt-get install  postgres
 
-MAIS voilà l'erreur agaçante : 2 clés sont introuvables et empêchent la mise à jour des paquets installables sur votre OS. 
+MAIS voilà l'erreur agaçante : 2 clés sont introuvables et empêchent la mise à jour des paquets installables sur votre OS.
 ```
-W: GPG error: ftp://ftp.nl.debian.org jessie-backports InRelease: The following signatures couldn't be verified because the public key is not available: 
+W: GPG error: ftp://ftp.nl.debian.org jessie-backports InRelease: The following signatures couldn't be verified because the public key is not available:
 NO_PUBKEY 8B48AD6246925553 NO_PUBKEY 7638D0442B90D010
 ```
 
@@ -80,7 +80,7 @@ Bon, ca ne marche pas. Il va falloir comprendre mieux ce qui se passe.
 
 Votre objectif est que cela fonctionne : `sudo aptitude -t jessie-backports install postgresql-9.6`
 
-## Vous n'arrivez pas à installer des packages avec apt-get 
+## Vous n'arrivez pas à installer des packages avec apt-get
 
 Souvent cela vient des clés d'authentification de paquets qui ne sont pas récupérées des serveurs de clés (mauvaise adresse de serveur, serveur en panne, ou clé inexistante) et vous vous croyez que vous avez un problème de réseau (mais non pas du tout, pas la peine de configurer tout de suite votre proxy d'université ni rien).
 
@@ -94,7 +94,7 @@ https://www.skyminds.net/linux-resoudre-lerreur-apt-there-is-no-public-key-avail
 
 https://raspberrypi.stackexchange.com/questions/12258/where-is-the-archive-key-for-backports-debian-org
 
-Je cite l'explication et le mode d'emploi associé le plus simple : 
+Je cite l'explication et le mode d'emploi associé le plus simple :
 ```
     All I had to do is replace the key ID to match the one i was missing, in my case 7638D0442B90D010
 
@@ -117,9 +117,9 @@ Ca ne marche pas : la cle n'y est pas
 http://keyserver.ubuntu.com/pks/lookup?op=index&search=postgres&fingerprint=on
 
 
-#### 4 solutions (qui n'ont pas marché du fait que la clé était inexistante) 
+#### 4 solutions (qui n'ont pas marché du fait que la clé était inexistante)
 
-Sources : 
+Sources :
 https://elkano.org/blog/debian-8-jessie-signatures-verified-public-key/
 https://unix.stackexchange.com/questions/274053/whats-the-best-way-to-install-apt-packages-from-debian-stretch-on-raspbian-jess
 
@@ -127,9 +127,9 @@ https://unix.stackexchange.com/questions/274053/whats-the-best-way-to-install-ap
 `sudo aptitude install debian-keyring debian-archive-keyring`
 `sudo apt-cache search debian keyring`
 `sudo aptitude update`
-    W: GPG error: http://ftp.debian.org jessie-backports InRelease: The following signatures couldn't be verified because the public key is not available: 
+    W: GPG error: http://ftp.debian.org jessie-backports InRelease: The following signatures couldn't be verified because the public key is not available:
     NO_PUBKEY 8B48AD6246925553 NO_PUBKEY 7638D0442B90D010
-    W: GPG error: http://httpredir.debian.org jessie-backports InRelease: The following signatures couldn't be verified because the public key is not available: 
+    W: GPG error: http://httpredir.debian.org jessie-backports InRelease: The following signatures couldn't be verified because the public key is not available:
     NO_PUBKEY 8B48AD6246925553 NO_PUBKEY 7638D0442B90D010
     W: Failed to fetch http://apt.postgresql.org/pub/repos/apt/dists/jessie-pgdg/InRelease: Unable to find expected entry 'main/binary-armhf/Packages' in Release file (Wrong sources.list entry or malformed file)
 
@@ -153,7 +153,7 @@ https://unix.stackexchange.com/questions/274053/whats-the-best-way-to-install-ap
 `sudo aptitude update`
 
 4. Solution 4
-`gpg --keyserver pgpkeys.mit.edu --recv-key  8B48AD6246925553`     
+`gpg --keyserver pgpkeys.mit.edu --recv-key  8B48AD6246925553`
 `gpg -a --export 8B48AD6246925553 | sudo apt-key add -`
 
 `sudo apt-get update`
@@ -163,12 +163,12 @@ https://unix.stackexchange.com/questions/274053/whats-the-best-way-to-install-ap
 #### Régler le problème de cette clé de merde 8B48AD6246925553
 
 L'explication était sur un forum, parmi tant d'autres : https://forum.proxmox.com/threads/gpg-error-on-apt-get-update-packages-from-jessie-main-missing.24041/
-```    
-Changing the source from ftp.us.debian.org to ftp.debian.org fixed it, so there is clearly something messed up with one of the US mirrors. 
-Then I changed the jessie from ftp.us.debian.org to ftp.uk.debian.org 
+```
+Changing the source from ftp.us.debian.org to ftp.debian.org fixed it, so there is clearly something messed up with one of the US mirrors.
+Then I changed the jessie from ftp.us.debian.org to ftp.uk.debian.org
 ```
 
-Ah OK, la clé n'existe pas. Il faut changer l'adresse du dépôt debian qui est corrompu en fait. 
+Ah OK, la clé n'existe pas. Il faut changer l'adresse du dépôt debian qui est corrompu en fait.
 LE bon dépôt : **deb http://ftp.debian.org/debian jessie-backports main contrib**
 
 
@@ -198,7 +198,7 @@ The following packages have unmet dependencies:
 E: Unable to correct problems, you have held broken packages.
 ```
 
-Pas de souci, on installe d'abord les dépendances bien sûr : 
+Pas de souci, on installe d'abord les dépendances bien sûr :
 
 ```
 sudo apt install postgresql-common/jessie-backports
@@ -207,9 +207,9 @@ sudo apt install postgresql-9.6/jessie-backports
 sudo apt install postgis-2.4/jessie-backports
 ```
 
-Après tout çà, j'ai aussi modifié Postgres pour supprimer la version 9.4 existant par défaut, et j'ai changé le mot de passe de postgres. Voir les explications sur COLLEC (https://github.com/Irstea/collec/blob/develop/install/Installation%20de%20COLLEC.md). Donc j'ai bien un serveur 9.6 qui écoute sur 5432. 
+Après tout çà, j'ai aussi modifié Postgres pour supprimer la version 9.4 existant par défaut, et j'ai changé le mot de passe de postgres. Voir les explications sur COLLEC (https://github.com/collec-science/collec-science/blob/develop/install/Installation%20de%20COLLEC.md). Donc j'ai bien un serveur 9.6 qui écoute sur 5432.
 
-Puis j'ai voulu tester "create extension postgis" sur une base de test. 
+Puis j'ai voulu tester "create extension postgis" sur une base de test.
 Et là évidemment, pas d'extension. Donc...
 
 ## Trouver et installer un package : exemple avec Postgis
@@ -235,7 +235,7 @@ Note : en cas de clé de merde qui fait chier, récupérer l'extension à la mai
 
 https://packages.debian.org/search?keywords=postgresql-9.6-postgis-2.3
 --> https://packages.debian.org/stretch/postgresql-9.6-postgis-2.3
-Architecture armhf : 
+Architecture armhf :
 https://packages.debian.org/stretch/armhf/postgresql-9.6-postgis-2.3/filelist
 
 Rajout dans /etc/apt/sources.list
@@ -245,7 +245,7 @@ deb http://ftp.de.debian.org/debian stretch main
 ```
 `sudo apt-get update`
 
-Note : en cas de clé de merde qui fait chier, récupérer l'extension à la main  
+Note : en cas de clé de merde qui fait chier, récupérer l'extension à la main
     wget http://ftp.de.debian.org/debian/pool/main/p/postgis/postgresql-9.6-postgis-2.3_2.3.1+dfsg-2_armhf.deb
 
 `sudo apt-get install postgresql-9.6-postgis-2.3 `
@@ -269,9 +269,9 @@ Setting up postgresql-9.6-postgis-2.3-scripts (2.3.1+dfsg-2) ...
 Processing triggers for libc-bin (2.24-11+deb9u1) ...
 ```
 
-Tout s'est bien passé. 
+Tout s'est bien passé.
 
-Et après, ok, `create extension postgis` a marché ! Ouf ! 
+Et après, ok, `create extension postgis` a marché ! Ouf !
 
 ## Episode à suivre : pourquoi Docker ne veut-il pas installer le package PHP 7 ? Résolu...
 
@@ -280,9 +280,6 @@ La dernière version de debian: STRECTCH, dispose de php7. Pour l'utiliser avec 
 ```
 FROM resin/rpi-raspbian:stretch
 RUN apt-get -y update
-RUN apt-get install -y apache2 php7.0 php-mbstring php7.0-pgsql php7.0-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim
+RUN apt-get install -y apache2 php7.4 php-mbstring php7.4-pgsql php7.4-xml php-xdebug php-curl default-jre php-gd fop php-imagick unzip ssl-cert vim
 RUN apt-get clean && apt-get -y autoremove
 ```
-
-
-

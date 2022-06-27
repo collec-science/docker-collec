@@ -1,12 +1,12 @@
 
-[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/jancelin/docker-collec/master/docker-compose.yml)
+[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/collec-science/docker-collec/master/docker-compose.yml)
 
 COLLEC RPI
 ============
 
-FROM Irstea/collec pour une utilisation sur le terrain en mode déconnecté 
+FROM collec-science/collec-science pour une utilisation sur le terrain en mode déconnecté
 
-**https://github.com/Irstea/collec**
+**https://github.com/collec-science/collec-science**
 
 
 INSTALLATION sur RASPBERRY PI 3 from scratch
@@ -47,11 +47,11 @@ sudo apt-get install python-pip
 sudo pip install docker-compose
 ```
 
-* Lire docker-things : 
+* Lire docker-things :
 
 - il n'est plus nécessaire de créer de répertoire de stockage des données mais il faut créer un volume pour Docker
 - il vaut mieux télécharger le contenu du GIT sur votre device (raspberry ou windows 10 pro)
-- il faut personnaliser votre base de données collec12b.sql avec votre propre export de votre base server collec. 
+- il faut personnaliser votre base de données collec12b.sql avec votre propre export de votre base server collec.
 - modifier en particulier danq collec12b.sql les paramètre de l'application APPLI_code pour donner un nom unique de BDD à votre base collec (Administration --> paramètres de l'application)
 - il faut veiller aux conflits réseau (si une base postgres tourne déja en 5432 ou un apache en 80/443 sur votre machine hors docker, éditer le fichier Docker-compose.yml)
 - il faut éditer Dockerfile.apache pour la variable JAVA_HOME et vérifier qu'elle pointe sur le bon environnement (ARM ou AMD64)
@@ -60,7 +60,7 @@ sudo pip install docker-compose
 docker volume create --name pgdata -d local
 ```
 
-- compiler votre image UNE fois 
+- compiler votre image UNE fois
 ```
 docker-compose up --build -d collec-web
 ```
@@ -77,7 +77,7 @@ docker-compose up -d collec-web
 
 https://IP/collec-master
 
-Accepter l'exception de sécurité sur votre certificat bidon. 
+Accepter l'exception de sécurité sur votre certificat bidon.
 
 > Login: admin
 
@@ -99,8 +99,8 @@ Les Wifi des raspberry sont protégés par un mot de passe : oliver07 par exempl
 1. Vérifier depuis votre ordinateur de bureau que tout fonctionne sous Chrone
 https://172.24.1.1/collec-master/
 Accepter l'exception de sécurité.
-Si tout va bien, passer au point 7 directement. 
-Sinon allez au point 2.  
+Si tout va bien, passer au point 7 directement.
+Sinon allez au point 2.
 
 2. Lancer Putty et se connecter sur 172.24.1.1
 login : pi
@@ -111,7 +111,7 @@ mot de passe : celui de votre raspberry (oliver_79 par exemple)
 cd GIT/docker_collec
 ```
 
-4. Vérifier l'état de vos images : 
+4. Vérifier l'état de vos images :
 ```
 docker ps
 ```
@@ -127,16 +127,16 @@ docker-compose up -d collec-web
 https://172.24.1.1/collec-master/
 Accepter l'exception de sécurité
 login (par exemple) : terrain
-Si tout va bien, passer au point 7 directement. 
+Si tout va bien, passer au point 7 directement.
 Si cela ne fonctionne pas, appeler votre informaticien référent.
 
-7. Si tout va bien, mettre le raspberry et sa batterie dans un sac à dos (ou un tupperware) à porter avec vous au terrain. 
+7. Si tout va bien, mettre le raspberry et sa batterie dans un sac à dos (ou un tupperware) à porter avec vous au terrain.
 
 COLLEC
 ============
 Collec est un logiciel destiné à gérer les collections d'échantillons prélevés sur le terrain.
 
-Écrit en PHP, il fonctionne avec une base de données Postgresql. Il est bâti autour de la notion d'objets, qui sont identifiés par un numéro unique. Un objet peut être de deux types : soit un container (aussi bien un site, un bâtiment, une pièce, un congélateur, une caisse...) qu'un échantillon. 
+Écrit en PHP, il fonctionne avec une base de données Postgresql. Il est bâti autour de la notion d'objets, qui sont identifiés par un numéro unique. Un objet peut être de deux types : soit un container (aussi bien un site, un bâtiment, une pièce, un congélateur, une caisse...) qu'un échantillon.
 Un type d'échantillon peut être rattaché à un type de container, quand les deux notions se superposent (le flacon contenant le résultat d'une pêche est à la fois un container et l'échantillon lui-même).
 Un objet peut se voir attacher plusieurs identifiants métiers différents, des événements, ou des réservations.
 Un échantillon peut être subdivisé en d'autres échantillons (du même type ou non). Il peut contenir plusieurs éléments identiques (notion de sous-échantillonnage), comme des écailles de poisson indifférenciées.
@@ -165,4 +165,3 @@ Logiciel diffusé sous licence AGPL
 Copyright
 ---------
 La version 1.0 a été déposée auprès de l'Agence de Protection des Programmes sous le numéro IDDN.FR.001.470013.000.S.C.2016.000.31500
- 

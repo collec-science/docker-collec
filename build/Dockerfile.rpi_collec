@@ -1,14 +1,14 @@
-FROM jancelin/docker-collec:rpi-php7
-MAINTAINER  Julien Ancelin from Irstea/collec \
+FROM collec-science/docker-collec:rpi-php7
+MAINTAINER  Julien Ancelin from collec-science/collec-science \
             Logiciel diffusé sous licence AGPL \
-            https://github.com/Irstea/collec
+            https://github.com/collec-science/collec-science
 
 #Variable de dépot et de nom de dossier
 ARG ZIP
 ARG REP
 
 # Install Collec
-ADD https://github.com/Irstea/collec/archive/$ZIP /var/www/html
+ADD https://github.com/collec-science/collec-science/archive/$ZIP /var/www/html
 
 RUN unzip /var/www/html/$ZIP -d /var/www/html/ && \
     rm /var/www/html/$ZIP
@@ -18,8 +18,8 @@ ADD param.inc.php /var/www/html/$REP/param/param.inc.php
 
 # Droits
 WORKDIR /var/www/html/$REP
-RUN mkdir -p display/templates_c 
+RUN mkdir -p display/templates_c
 RUN chown -R root:www-data . &&\
     chmod -R g+r,g-w . &&\
     chmod -R g+w /var/www/html/$REP/temp &&\
-    chmod -R g+w /var/www/html/$REP/display/templates_c 
+    chmod -R g+w /var/www/html/$REP/display/templates_c
