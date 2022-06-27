@@ -60,7 +60,7 @@ Download the code of this deposit in a folder on your computer:
 sudo apt-get install wget unzip
 wget https://github.com/collec-science/docker-collec/archive/master.zip
 unzip master.zip
-cd docker-collec-master
+cd collec-docker
 ```
 Create a Docker volume to host the Postgresql database:
 ```
@@ -68,22 +68,22 @@ docker volume create --name collecpgdata -d local
 ```
 Create the two images and the associated containers:
 ```
-docker-compose up --build
+docker-compose up --build &!
 ```
 If all goes well, you will find the following images:
 ```
 docker images
 REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
-docker-collec-master_collec-web       latest              834d8fd9f504        18 hours ago        782MB
-docker-collec-master_collec-db        latest              78d95ff5fea4        19 hours ago        888MB
+collec-docker_collec-web       latest              834d8fd9f504        18 hours ago        782MB
+collec-docker_collec-db        latest              78d95ff5fea4        19 hours ago        888MB
 ```
 
 And the containers:
 ```
 docker container ls
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                                      NAMES
-125eafce92ac        docker-collec-master_collec-web   "/bin/sh -c /start.sh"   56 seconds ago      Up 54 seconds       0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   docker-collec-master_collec-web_1
-4f6b43a1261a        docker-collec-master_collec-db    "su - postgres -c 'P…"   17 hours ago        Up 10 minutes       0.0.0.0:5433->5432/tcp                     docker-collec-master_collec-db_1
+125eafce92ac        collec-docker_collec-web   "/bin/sh -c /start.sh"   56 seconds ago      Up 54 seconds       0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   collec-docker_collec-web_1
+4f6b43a1261a        collec-docker_collec-db    "su - postgres -c 'P…"   17 hours ago        Up 10 minutes       0.0.0.0:5433->5432/tcp                     collec-docker_collec-db_1
 ```
 
 **Caution: **the web server exposes ports 80 and 443. If you already have a web server running on your computer, you will need to shut down your local web server before starting the containers.
@@ -97,7 +97,7 @@ collec user password: collecPassword
 ### Docker is installed in the computer that is used to access the application
 This is the case with a Windows or Linux laptop. First, retrieve the IP address of the web server:
 ```
-docker exec docker-collec-master_collec-web_1 ifconfig
+docker exec collec-docker_collec-web_1 ifconfig
 eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 1500
         inet 172.19.0.3 netmask 255.255.0.0.0 broadcast 172.19.255.255.255
 ```
@@ -121,15 +121,15 @@ The *docker-compose* commands must be executed from the docker-collec folder.
 
 * docker images: displays the list of available images
 * docker container ls: displays the list of containers
-* docker stop docker-collec-master_collec-web_1 : stops the container containing the collec-web image
-* docker start docker-collec-master_collec-web_1 &! starts the previously stopped container
+* docker stop collec-docker_collec-web_1 : stops the container containing the collec-web image
+* docker start collec-docker_collec-web_1: starts the previously stopped container
 * docker-compose up &!: starts the containers in the background
 * docker-compose up -d: starts the collec-web and collec-db in their respective containers, recreating them
-* docker exec -ti docker-collec-master_collec-web_1 /bin/bash: connects to the container and allows to execute commands
-* docker rmi docker-collec-master_collec-web --force: suddenly deletes the collec-web image
+* docker exec -ti collec-docker_collec-web_1 /bin/bash: connects to the container and allows to execute commands
+* docker rmi collec-docker_collec-web --force: suddenly deletes the collec-web image
 * docker-compose up --build: recreates both images. Warning: the database will be recreated!
-* docker update --restart=no docker-collec-master_collec-web_1 : disables the automatic start of the container
-* docker inspect docker-collec-master_collec-web_1: displays the current container settings
+* docker update --restart=no collec-docker_collec-web_1 : disables the automatic start of the container
+* docker inspect collec-docker_collec-web_1: displays the current container settings
 * docker system prune -a : deletes all images, to reset docker
 
 ## Database backup
@@ -145,7 +145,7 @@ For download the code, you must connected to Internet: use a Ethernet cable if y
 
 ### Make a backup of the database
 ```
-docker exec -ti docker-collec-master_collec-db_1 bash
+docker exec -ti collec-docker_collec-db_1 bash
 su - postgres -c /var/lib/postgresql/backup.sh
 ```
 You should find your backup files in the ~/collecpgbackup folder on your computer (~ corresponds to your default folder).
@@ -159,7 +159,7 @@ docker container ls
 
 Retrieve the version number of the current database version:
 ```
-docker exec -ti docker-collec-master_collec-db_1 bash
+docker exec -ti collec-docker_collec-db_1 bash
 su postgres -c 'psql collec -c "select dbversion_number from col.dbversion order by dbversion_date desc limit 1"'
 ```
 Check the Github repository for a database modification script (in[https://github.com/Irstea/collec/tree/master/install/pgsql](https://github.com/Irstea/collec/tree/master/install/pgsql)). The script is in the form:
@@ -211,22 +211,22 @@ Quit the container with ctrl-D ctrl-D.
 Save the configuration files:
 ```
 mkdir param
-docker cp docker-collec-master_collec-web_1:/var/www/collec-science/collec-science/param/param.inc.php param/
-docker cp docker-collec-master_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science param/
-docker cp docker-collec-master_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science.pub param/
+docker cp collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/param.inc.php param/
+docker cp collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science param/
+docker cp collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/id_collec-science.pub param/
 ```
 
 Stop the container, and recreate the image:
 ```
-docker stop docker-collec-master_collec-web_1
+docker stop collec-docker_collec-web_1
 docker-compose up --build collec-web &!
 ```
 Docker will recreate the image by loading the new version of the application. Once the container is started, reintegrate the previously saved configuration files:
 ```
-docker cp param/param.inc.php docker-collec-master_collec-web_1:/var/www/collec-science/collec-science/param/
-docker cp param/id_collec docker-collec-master_collec-web_1:/var/www/collec-science/collec-science/param/
-docker cp param/id_collec.pub docker-collec-master_collec-web_1:/var/www/collec-science/collec-science/param/
-docker exec -ti docker-collec-master_collec-web_1 bash
+docker cp param/param.inc.php collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/
+docker cp param/id_collec collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/
+docker cp param/id_collec.pub collec-docker_collec-web_1:/var/www/collec-science/collec-science/param/
+docker exec -ti collec-docker_collec-web_1 bash
 cd /var/www/collec-science/collec-science/param
 chgrp www-data id_collec-science*
 chmod g+r id_collec-science*
