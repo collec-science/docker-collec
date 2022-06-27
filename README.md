@@ -1,27 +1,27 @@
 **DOCKER-COLLEC-SCIENCE**
 
-- [Presentation](#Presentation)
-- [Docker installation](#Docker-installation)
-  - [Debian, Ubuntu or Raspbian](#Debian-Ubuntu-or-Raspbian)
-  - [Windows](#Windows)
-- [Installation of containers](#Installation-of-containers)
+- [Presentation](#presentation)
+- [Docker installation](#docker-installation)
+  - [Debian, Ubuntu or Raspbian](#debian-ubuntu-or-raspbian)
+  - [Windows](#windows)
+- [Installation of containers](#installation-of-containers)
   - [launch the web application](#launch-the-web-application)
-    - [Docker is installed in the computer that is used to access the application](#Docker-is-installed-in-the-computer-that-is-used-to-access-the-application)
-    - [Docker is installed in a Raspberry](#Docker-is-installed-in-a-Raspberry)
-  - [Some useful docker commands](#Some-useful-docker-commands)
-  - [Database backup](#Database-backup)
-  - [Update the application](#Update-the-application)
-    - [Make a backup of the database](#Make-a-backup-of-the-database)
-    - [Update the database](#Update-the-database)
-    - [Update the application](#Update-the-application-1)
-- [Using a Raspberry Pi](#Using-a-Raspberry-Pi)
-  - [Installation of Raspbian](#Installation-of-Raspbian)
+    - [Docker is installed in the computer that is used to access the application](#docker-is-installed-in-the-computer-that-is-used-to-access-the-application)
+    - [Docker is installed in a Raspberry](#docker-is-installed-in-a-raspberry)
+  - [Some useful docker commands](#some-useful-docker-commands)
+  - [Database backup](#database-backup)
+  - [Update the application](#update-the-application)
+    - [Make a backup of the database](#make-a-backup-of-the-database)
+    - [Update the database](#update-the-database)
+    - [Update the application](#update-the-application-1)
+- [Using a Raspberry Pi](#using-a-raspberry-pi)
+  - [Installation of Raspbian](#installation-of-raspbian)
   - [ssh connection](#ssh-connection)
-  - [Install Docker and the software](#Install-Docker-and-the-software)
-  - [Change the rights for the database backup](#Change-the-rights-for-the-database-backup)
-  - [Create a wifi network to connect terminals directly](#Create-a-wifi-network-to-connect-terminals-directly)
-- [Acknowledgements](#Acknowledgements)
-- [License](#License)
+  - [Install Docker and the software](#install-docker-and-the-software)
+  - [Change the rights for the database backup](#change-the-rights-for-the-database-backup)
+  - [Create a wifi network to connect terminals directly](#create-a-wifi-network-to-connect-terminals-directly)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
 
 # Presentation
 
@@ -58,7 +58,7 @@ The commands are given for Linux. Remember to adapt the approach to Windows (man
 Download the code of this deposit in a folder on your computer:
 ```
 sudo apt-get install wget unzip
-wget https://github.com/collec-science/collec-docker/archive/master.zip
+wget https://github.com/collec-science/docker-collec/archive/master.zip
 unzip master.zip
 cd docker-collec-master
 ```
@@ -105,9 +105,9 @@ Here, the container has been assigned the IP address *172.19.0.3*.
 
 Add a line in your /etc/hosts (Linux) or c:\Windows\System32\drivers\etc\hosts (Windows) file:
 ```
-172.19.0.3 collec-docker collec-docker.local
+172.19.0.3 docker-collec docker-collec.local
 ```
-In your browser, go to the site: [https://collec-docker.local](https://collec-docker.local). Accept the security exception: you should access the application.
+In your browser, go to the site: [https://docker-collec.local](https://docker-collec.local). Accept the security exception: you should access the application.
 
 You can connect with the login *admin*, password *password*: this is a default installation. Then remember to delete the admin account or change the password when you are working in production (except for local access only).
 
@@ -117,7 +117,7 @@ Refer to the corresponding documentation in the chapter[Using a Raspberry Pi](#U
 
 ## Some useful docker commands
 
-The *docker-compose* commands must be executed from the collec-docker folder.
+The *docker-compose* commands must be executed from the docker-collec folder.
 
 * docker images: displays the list of available images
 * docker container ls: displays the list of containers
@@ -271,17 +271,17 @@ chmod 777 collecpgbackup
 Follow the instructions defined in the first chapter of this document: [https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md](https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md) (*Setting up a Raspberry Pi as an access point in a standalone network (NAT)*).
 
 Adapt the content of the file */etc/hostapd/hostapd.conf*, and in particular :
-* ssid=collec-docker
+* ssid=docker-collec
 * wpa_passphrase=your_password
 
 Then edit the file */etc/dnsmasq.conf*, and add these lines:
 ```
 server=8.8.8.8
-address=/collec-docker.local/192.168.4.1
+address=/docker-collec.local/192.168.4.1
 ```
 The *server* line corresponds to Google's web address server (DNS). If you want to use another DNS, for example your organization's, change this line.
 
-Restart the Raspberry, and connect to the wifi network *collec-docker*. Test the communication with the application, by entering the following address in a browser: https://collec-docker.local. You must access the home page. In case of access problems (address not recognized), you can also connect directly to the IP address: https://192.168.4.1.
+Restart the Raspberry, and connect to the wifi network *docker-collec*. Test the communication with the application, by entering the following address in a browser: https://docker-collec.local. You must access the home page. In case of access problems (address not recognized), you can also connect directly to the IP address: https://192.168.4.1.
 
 <!--- This configuration allows you to load the Openstreetmap tiles before leaving for the field:
 * at the office, connect the Raspberry to the local network with an Ethernet cable

@@ -8,14 +8,12 @@ ST = .
 L = .
 O = .
 OU = .
-CN = collec-docker.local
+CN = docker-collec.local
 [v3_req]
 keyUsage = keyEncipherment, dataEncipherment
 extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = collec-docker
+DNS.1 = docker-collec
 DNS.2 = localhost
 DNS.3 = collec-science.com
-
-
