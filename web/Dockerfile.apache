@@ -1,5 +1,5 @@
 FROM  debian:buster
-MAINTAINER  Julien Ancelin, Christine Plumejeaud, Eric Quinton from collec-science/collec-science \
+MAINTAINER  Julien Ancelin, Christine Plumejeaud, Eric Quinton from Irstea/collec \
             Collec-Science is published under AGPL license \
             https://github.com/collec-science/collec-science \
             this script is distributed under MIT license
@@ -29,13 +29,13 @@ RUN apt-get -y install postgresql-client-11 netcat
 # php-apache-cups
 RUN apt-get install -y \
     apache2 \
-    libapache2-mod-php7.3 \
-    php7.3 \
-    php7.3-ldap \
-    php7.3-zip \
+    libapache2-mod-php7.4 \
+    php7.4 \
+    php7.4-ldap \
+    php7.4-zip \
     php-mbstring \
-    php7.3-pgsql \
-    php7.3-xml \
+    php7.4-pgsql \
+    php7.4-xml \
     php-xdebug \
     php-curl \
     php-gd \
@@ -60,7 +60,7 @@ RUN openssl req -new -x509 -days 3650 -nodes -text -out /etc/ssl/certs/server.cr
 ADD collec-apache.conf /etc/apache2/sites-available/collec.conf
 
 # Activ site
-ADD php.ini /etc/php/7.3/apache2/php.ini
+ADD php.ini /etc/php/7.4/apache2/php.ini
 ADD collec-apache.conf /etc/apache2/sites-available/collec.config
 # ADD default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 RUN a2ensite 000-default; a2ensite default-ssl; a2ensite collec
@@ -114,3 +114,4 @@ ADD start.sh /start.sh
 RUN chmod 0755 /start.sh
 # CMD is not run at build time. Only when the container is started (docker-compose up <SERVICE> or docker run <IMAGEID>)
 CMD /start.sh
+
