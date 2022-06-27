@@ -9,8 +9,8 @@ POSTGRES="/usr/lib/postgresql/11/bin/postgres"
 INITDB="/usr/lib/postgresql/11/bin/initdb"
 SQLDIR="/usr/share/postgresql/11/contrib/postgis-2.5/"
 LOCALONLY="-c listen_addresses='127.0.0.1, ::1'"
-CREATESCRIPT="https://github.com/collec-science/collec-science/raw/master/install/init_global_by_psql.sql"
-POPULATE="https://github.com/collec-science/collec-science/raw/master/install/pgsql/create.sql"
+CREATESCRIPT="https://github.com/collec-science/collec-science/raw/master/install/init_by_psql.sql"
+POPULATE="https://github.com/collec-science/collec-science/raw/master/install/pgsql/collec-create.sql"
 
 #Christine : ajouter postgres au groupe ssl-cert qui a le droit de lire le repertoire des cles privees
 command addgroup --system 'ssl-cert'
@@ -114,7 +114,3 @@ su - postgres -c "psql -f /var/lib/postgresql/init_by_psql.sql"
 su - postgres -c "psql -l"
 
 echo "Postgres initialisation process completed."
-
-
-
-

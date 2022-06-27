@@ -1,5 +1,5 @@
 FROM  debian:buster
-MAINTAINER  Julien Ancelin, Christine Plumejeaud, Eric Quinton from Irstea/collec \
+MAINTAINER  Julien Ancelin, Christine Plumejeaud, Eric Quinton from collec-science/collec-science \
             Collec-Science is published under AGPL license \
             https://github.com/collec-science/collec-science \
             this script is distributed under MIT license
@@ -24,7 +24,12 @@ RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" 
     apt-get -y install wget ca-certificates && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && apt-get -y update
 
 ## Install of netstat, psql and nc for debug
-RUN apt-get -y install postgresql-client-11 netcat
+RUN apt-get -y install postgresql-client-11 netcat lsb-release apt-transport-https
+
+# Update apt source for php
+RUN wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
+    sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list' && \
+     apt-get -y update
 
 # php-apache-cups
 RUN apt-get install -y \
@@ -80,7 +85,7 @@ ARG COLLECDIR=/var/www/collec-science
 RUN mkdir $COLLECDIR
 ADD https://github.com/collec-science/collec-science/archive/$ZIP $COLLECDIR
 RUN unzip $COLLECDIR/$ZIP -d $COLLECDIR/ && \
-    ln -s $COLLECDIR/collec-master $COLLECDIR/collec-science &&\
+    ln -s $COLLECDIR/collec-science-master $COLLECDIR/collec-science &&\
     rm $COLLECDIR/$ZIP
 
 
@@ -91,6 +96,7 @@ ADD param.inc.php.dist $COLLECDIR/collec-science/param/param.inc.php
 WORKDIR $COLLECDIR/collec-science
 RUN chmod -R 755 $COLLECDIR/collec-science &&\
     mkdir -p display/templates_c && \
+    mkdir -p temp && \
     chown -R root:www-data . &&\
     chmod -R g+r,g-w . &&\
     chmod -R g+w temp &&\
@@ -114,4 +120,3 @@ ADD start.sh /start.sh
 RUN chmod 0755 /start.sh
 # CMD is not run at build time. Only when the container is started (docker-compose up <SERVICE> or docker run <IMAGEID>)
 CMD /start.sh
-
