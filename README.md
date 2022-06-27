@@ -5,6 +5,7 @@
   - [Debian, Ubuntu or Raspbian](#debian-ubuntu-or-raspbian)
   - [Windows](#windows)
 - [Installation of containers](#installation-of-containers)
+    - [Recreate the database](#recreate-the-database)
   - [launch the web application](#launch-the-web-application)
     - [Docker is installed in the computer that is used to access the application](#docker-is-installed-in-the-computer-that-is-used-to-access-the-application)
     - [Docker is installed in a Raspberry](#docker-is-installed-in-a-raspberry)
@@ -88,11 +89,23 @@ CONTAINER ID        IMAGE                  COMMAND                  CREATED     
 
 **Caution: **the web server exposes ports 80 and 443. If you already have a web server running on your computer, you will need to shut down your local web server before starting the containers.
 
-If you have installed the Postgresql client on your computer, the postgresql server will be accessible from port 5433, at localhost :
+If you have installed the Postgresql client on your computer, the postgresql server will be accessible from port 5433, at localhost:
+
 ```
 psql -U collec -h localhost -p 5433
 collec user password: collecPassword
 ```
+
+### Recreate the database
+
+In certain case, the database is not really create (the database collec not exists in the web logs), you must recreate it from shell:
+
+```
+docker exec -ti collec-docker_collec-db_1 /bin/bash
+cd /
+./build-postgres.sh
+```
+
 ## launch the web application
 ### Docker is installed in the computer that is used to access the application
 This is the case with a Windows or Linux laptop. First, retrieve the IP address of the web server:

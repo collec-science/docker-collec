@@ -103,7 +103,7 @@ su - postgres -c "$POSTGRES -D $DATADIR -c config_file=$CONF $LOCALONLY" &
 # wait for postgres to come up
 until `nc -z 127.0.0.1 5432`; do
     echo "$(date) - waiting for postgres localhost-only..."
-    sleep 1
+    sleep 5
 done
 #systemctl start postgresql
 echo "postgres ready"
